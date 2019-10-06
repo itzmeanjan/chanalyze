@@ -8,6 +8,11 @@ except ImportError as e:
     print('[!]Module Unavailable : {}'.format(str(e)))
     exit(1)
 
+'''
+    Holds all messages sent by a certain user, participated in a chat
+    ( for both private & group ), along with its name
+'''
+
 
 class User(object):
     def __init__(self, name: str, messages: List[Message]):
