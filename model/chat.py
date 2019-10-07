@@ -4,7 +4,10 @@ from __future__ import annotations
 from typing import List, Tuple
 from re import compile as reg_compile, Pattern
 from functools import reduce
+from sys import path
+from os.path import abspath, dirname
 try:
+    path.append(dirname(abspath(__file__)))
     from message import Message
     from user import User
 except ImportError as e:
@@ -22,18 +25,19 @@ class Chat(object):
 
     def __init__(self, users: List[User]):
         self.users = users
-        self._messageCount = reduce(
-            lambda acc, cur: acc + len(cur.messages), self.users, 0)  # calculating # of messages in this Chat
+
     '''
         Returns calculated # of messages present in this chat
     '''
     @property
     def messageCount(self) -> int:
-        return self._messageCount
+        return sum([len(i.messages) for i in self.users])
 
     '''
         Finds out whether a certain User participated in this chat or not
         ( by its name )
+
+        In case of failure, returns None
     '''
 
     def getUser(self, name: str) -> User:

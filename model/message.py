@@ -11,15 +11,8 @@ from datetime import datetime
 
 class Message(object):
     def __init__(self, content: str, timeStamp: str):
-        self._content = content
+        self.content = content.rstrip()
         self._timeStamp = timeStamp
-
-    '''
-        Returns content of a message ( right new line `\n`, stripped )
-    '''
-    @property
-    def content(self) -> str:
-        return self._content.rstrip()
 
     '''
         Returns timestamp of a message as a datetime 
