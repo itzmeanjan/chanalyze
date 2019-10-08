@@ -69,6 +69,6 @@ Due to privacy, I've shaded _75%_ part of Contact Names/ Numbers.
 ## license
 It's MIT licensed :blush:
 ## support
-Consider showing some :heat: by putting :star: on this _[repo](https://github.com/itzmeanjan/chanalyze)_
+Consider showing some :heart: by putting :star: on this _[repo](https://github.com/itzmeanjan/chanalyze)_
 
 :copyright: Anjan Roy
