@@ -1,5 +1,5 @@
 # chanalyze
-A WhatsApp Chat analyzer, for both Private & Group Chats, written with :heart:
+A WhatsApp Chat analyzer, for both Private & Group Chats, written with <3
 
 **I'll keep updating this page, cause I'm still working on it**
 
@@ -10,7 +10,7 @@ A WhatsApp Chat analyzer, for both Private & Group Chats, written with :heart:
 - Won't it be really great if you could learn, how much time you're spending on a certain WhatsApp Chat or what's your activity like etc.
 - Yeah that's what drove me to write these simple *Python* scripts, so that I can get a deeper insight into my chat behaviour _( also of others )_.
 - Well this enabled me to learn more about, when a certain participant is generally more active i.e. **helps you to have a shallow understanding of their sleep patterns**.
-- And a lot more ... :wink:
+- And a lot more ... ;)
 
 ## data source
 - Open WhatsApp on your mobile
@@ -52,8 +52,6 @@ Consider invoking `util.plotContributionOfUserByHour()`, to generate a Pie chat 
 **More to come soon ...** :wink:
 
 ## license
-It's MIT licensed :blush:
+It's MIT licensed (^-^)
 ## support
-Consider showing some :heart: by putting :star: on this _[repo](https://github.com/itzmeanjan/chanalyze)_
-
-:copyright: Anjan Roy
+Consider showing some <3 by putting * on this _[repo](https://github.com/itzmeanjan/chanalyze)_
