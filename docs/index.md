@@ -53,11 +53,18 @@ Consider invoking `util.plotContributionOfUserByHour()`, to generate a Pie chat 
 
 ## samples
 Due to privacy, I've shaded _75%_ part of Contact Names/ Numbers.
-Title | Plotting
---- | ---
-_Participation In Group Chat By User_ | ![participationInGroupChatByUser](../plots/participationInGroupChatByUser.png)
-_Participation In Private Chat By User_ | ![participationInPrivateChatByUser](../plots/participationInPrivateChatByUser.png)
-_Active Time Periods For Group Chat Participant_ | ![activityOfAParticipant](../plots/contributionInGroupChatOf*******oyByHour.png)
+
+*Participation In Group Chat By User*
+
+![participationInGroupChatByUser](../plots/participationInGroupChatByUser.png)
+
+*Participation In Private Chat By User*
+
+![participationInPrivateChatByUser](../plots/participationInPrivateChatByUser.png)
+
+*Active Time Periods For a Group Chat Participant*
+
+![activityOfAParticipant](../plots/contributionInGroupChatOf*******oyByHour.png)
 
 ## license
 It's MIT licensed :blush:
