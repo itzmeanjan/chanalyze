@@ -22,7 +22,7 @@ _For sake of **Privacy** Participants' Contact Names/ Numbers are partially gray
 ---
 
 ### 2. Contribution of Users in Chat by Hour
-I splitted a day into 8 equal halves and extracted statistics of activity ( mine & others too ) for each of those timespans, to learn when users are more active. And no doubt result was interesting _( atleast for Group Chat :wink: )_.
+I splitted a day into 8 equal parts and extracted statistics of activity ( mine & others too ) for each of those timespans, to learn when users are more active. And no doubt result was interesting _( atleast for Group Chat :wink: )_.
 
 - 00:00:00 - 02:59:59
 - 03:00:00 - 05:59:59
@@ -37,7 +37,7 @@ Following Pie charts show how two participants contributed to a Private chat i.e
 
 ![activityOfParticipantOne](plots/contributionInPrivateChatOf*******oyByHour.png)
 
-![activityOfParticipantOne](plots/contributionInPrivateChatOf******************atty_\)ByHour.png)
+![activityOfParticipantTwo](plots/contributionInPrivateChatOf******************atty_\)ByHour.png)
 
 Following Pie charts showing how participants were contributing in a Group Chat.
 
