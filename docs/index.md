@@ -5,11 +5,13 @@ A WhatsApp Chat analyzer, for both Private & Group Chats, written with :heart:
 
 ## nomenclature
 *Chat* + *Analyze* = **Chanalyze**
+
 ## motivation
 - Won't it be really great if you could learn, how much time you're spending on a certain WhatsApp Chat or what's your activity like etc.
 - Yeah that's what drove me to write these simple *Python* scripts, so that I can get a deeper insight into my chat behaviour _( also of others )_.
 - Well this enabled me to learn more about, when a certain participant is generally more active i.e. **helps you to have a shallow understanding of their sleep patterns**.
 - And a lot more ... :wink:
+
 ## data source
 - Open WhatsApp on your mobile
 - Click on a Chat
@@ -17,6 +19,7 @@ A WhatsApp Chat analyzer, for both Private & Group Chats, written with :heart:
 - From there select **More**
 - And **Export Chat**
 - Consider uploading to Drive & download _*.txt_ later
+
 ## using
 - I wrote it while using *Python 3.7.3*, so consider using it or above
 - Otherwise *Python* type annotation may cause some unexpected issues
@@ -25,10 +28,9 @@ A WhatsApp Chat analyzer, for both Private & Group Chats, written with :heart:
 - I'm expecting you've already exported chat from _WhatsApp_ & downloaded so
 - Create a directory named, `data` under root of this project
 - Put _*.txt_ into this directory
+
 ### Participation of Users in Chat
 Invoke `util.plotContributionInChatByUser()`, to generate a Bar chart, depicting how participants contributed to a Chat i.e. by percentage
-
----
 
 ### Active Time Period _( in this Chat )_ of Participants
 I splitted a whole day into 8 equal sized parts, as follows
@@ -47,24 +49,7 @@ No doubt it's more effective for Group Chats.
 
 Consider invoking `util.plotContributionOfUserByHour()`, to generate a Pie chat of activity of selected user _( from Chat object )_
 
----
-
 **More to come soon ...** :wink:
-
-## samples
-Due to privacy, I've shaded _75%_ part of Contact Names/ Numbers.
-
-*Participation In Group Chat By User*
-
-![participationInGroupChatByUser](plots/participationInGroupChatByUser.png)
-
-*Participation In Private Chat By User*
-
-![participationInPrivateChatByUser](plots/participationInPrivateChatByUser.png)
-
-*Active Time Periods For a Group Chat Participant*
-
-![activityOfAParticipant](plots/contributionInGroupChatOf*******oyByHour.png)
 
 ## license
 It's MIT licensed :blush:
