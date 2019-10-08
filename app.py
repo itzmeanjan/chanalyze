@@ -18,15 +18,21 @@ def main() -> float:
 
     try:
         return __calculatePercentageOfSuccess__(
-            [  # plotContributionInChatByUser(Chat.importFromText('./data/private.txt'), './plots/participationInPrivateChatByUser.png', 'Visualization of Participation of Users in Chat'),
-                # plotContributionInChatByUser(Chat.importFromText(
-                #  './data/group.txt'), './plots/participationInGroupChatByUser.png', 'Visualization of Participation of Users in Chat'),
+            [plotContributionInChatByUser(Chat.importFromText('./data/private.txt'), './plots/participationInPrivateChatByUser.png', 'Visualization of Participation of Users in Chat'),
+                plotContributionInChatByUser(Chat.importFromText(
+                    './data/group.txt'), './plots/participationInGroupChatByUser.png', 'Visualization of Participation of Users in Chat'),
                 *reduce(lambda acc, cur:
                         [plotContributionOfUserByHour(
                             cur.messages, './plots/contributionInPrivateChatOf{}ByHour.png'.format(
-                                shadeContactName('_'.join(cur.name.split(' ')))),
-                            'Visualization of {}\'s Participation in Private Chat'.format(shadeContactName(cur.name)))] + acc,
-                        Chat.importFromText('./data/private.txt').users, [])])
+                                shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
+                            'Visualization of {}\'s Participation in Private Chat'.format(shadeContactName(cur.name, percent=75)))] + acc,
+                        Chat.importFromText('./data/private.txt').users, []),
+             *reduce(lambda acc, cur:
+                     [plotContributionOfUserByHour(
+                         cur.messages, './plots/contributionInGroupChatOf{}ByHour.png'.format(
+                             shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
+                         'Visualization of {}\'s Participation in Group Chat'.format(shadeContactName(cur.name, percent=75)))] + acc,
+                     Chat.importFromText('./data/group.txt').users, [])])
     except Exception:
         return 0.0
 

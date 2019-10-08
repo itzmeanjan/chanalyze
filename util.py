@@ -6,6 +6,7 @@ from os import mkdir
 from functools import reduce
 from typing import Dict, List
 from collections import OrderedDict
+from math import ceil
 try:
     from matplotlib import pyplot as plt
     from matplotlib.ticker import MultipleLocator, PercentFormatter
@@ -26,9 +27,9 @@ def directoryBuilder(targetPath: str):
         mkdir(dirName)
 
 
-# shades last half of characters of Contact by `*`, for sake of privacy
-def shadeContactName(name: str) -> str:
-    return name[:-(len(name)//2)]+'*'*(len(name)//2)
+# shades first half of characters of Contact by `*`, for sake of privacy
+def shadeContactName(name: str, percent: float = 50.0, where: str = 'f') -> str:
+    return '*'*ceil(len(name)*percent/100) + name[ceil(len(name)*percent/100):] if where.lower() == 'f' else name[:-ceil(len(name)*percent/100)] + '*'*ceil(len(name)*percent/100)
 
 
 '''
@@ -44,7 +45,7 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str) -> boo
                    key=lambda e: len(chat.getUser(e).messages))
         y_pos = range(len(y))
         x = [len(chat.getUser(i).messages)/chat.messageCount*100 for i in y]
-        y = [shadeContactName(i) for i in y]
+        y = [shadeContactName(i, percent=75) for i in y]
         with plt.style.context('ggplot'):
             font = {
                 'family': 'serif',
