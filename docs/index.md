@@ -56,15 +56,15 @@ Due to privacy, I've shaded _75%_ part of Contact Names/ Numbers.
 
 *Participation In Group Chat By User*
 
-![participationInGroupChatByUser](../plots/participationInGroupChatByUser.png)
+![participationInGroupChatByUser](plots/participationInGroupChatByUser.png)
 
 *Participation In Private Chat By User*
 
-![participationInPrivateChatByUser](../plots/participationInPrivateChatByUser.png)
+![participationInPrivateChatByUser](plots/participationInPrivateChatByUser.png)
 
 *Active Time Periods For a Group Chat Participant*
 
-![activityOfAParticipant](../plots/contributionInGroupChatOf*******oyByHour.png)
+![activityOfAParticipant](plots/contributionInGroupChatOf*******oyByHour.png)
 
 ## license
 It's MIT licensed :blush:
