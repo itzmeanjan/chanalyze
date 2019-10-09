@@ -19,6 +19,10 @@ class User(object):
         self.name = name
         self.messages = messages
 
+    def __str__(self):
+        super().__str__()
+        return '{} with {} messages'.format(self.name, len(self.messages))
+
 
 if __name__ == '__main__':
     print('[!]This module is designed to be used as a backend handler')

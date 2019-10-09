@@ -8,7 +8,7 @@ from sys import path
 from os.path import abspath, dirname
 try:
     path.append(dirname(abspath(__file__)))
-    from message import Message
+    from message import Message, MessageIndex
     from user import User
 except ImportError as e:
     print('[!]Module Unavailable : {}'.format(str(e)))
@@ -89,10 +89,14 @@ class Chat(object):
             messages sent by them, done in this closure
         '''
         def __createUserObject__(acc: List[User], content: Tuple[str, str]) -> List[User]:
-            msg = Message(__getMessage__(content[1]), content[0])
+            # if we can't extract username from message text, it's not a message of this chat, so we just ignore it
             userName = __getUser__(content[1])
             if not userName:
-                return acc
+                return acc  # returning in unchanged form
+            msg = Message(msgIndex.index, __getMessage__(
+                content[1]), content[0])
+            # incrementing index for next message, which lets us sequentially ordering messages as they appeared in chat
+            msgIndex.increment()
             found = reduce(lambda accInner, curInner: curInner if curInner.name ==
                            userName else accInner, acc, None)
             if not found:
@@ -103,6 +107,7 @@ class Chat(object):
 
         obj = Chat([])
         try:
+            msgIndex = MessageIndex(0)
             with open(filePath, 'r') as fd:
                 obj.users = reduce(
                     __createUserObject__, __groupify__(

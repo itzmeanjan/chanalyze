@@ -7,13 +7,16 @@ from functools import reduce
 from typing import Dict, List
 from collections import OrderedDict
 from math import ceil
+from datetime import datetime, date, time
 try:
     from matplotlib import pyplot as plt
     from matplotlib.ticker import MultipleLocator, PercentFormatter
+    from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator
     from model.chat import Chat
     from model.user import User
     from model.message import Message
     from model.timePeriod import TimePeriod
+    from model.msgInMinute import MessagesSentInMinute, MessagesSentInADay
 except ImportError as e:
     print('[!]Module Unavailable : {}'.format(str(e)))
     exit(1)
@@ -114,6 +117,88 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.5)  # exporting plotted PIE chart
         plt.close()  # closing this figure on which we just plotted a PIE chart
+        return True
+    except Exception:
+        return False
+
+
+def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
+    def __buildEachMinuteStatHolder__(holder: MessagesSentInADay, current: Message) -> MessagesSentInADay:
+        holder.findARecord(current.timeStamp.timetz()).incrementCount()
+        return holder
+
+    def __splitIntoParts__(whole, partCount: int):
+        lengthOfEachPart = len(whole)//partCount
+        return [whole[i*lengthOfEachPart:(i+1)*lengthOfEachPart]
+                for i in range(partCount)]
+
+    try:
+        directoryBuilder(targetPath)
+        statByMinute = reduce(__buildEachMinuteStatHolder__, messages, MessagesSentInADay([
+            MessagesSentInMinute(i, j, 0) for i in range(0, 24) for j in range(0, 60)]))
+        tmpX = [datetime.combine(date(2000, 1, 1), time(i.hour, i.minute))
+                for i in statByMinute.records]
+        x1, x2, x3, x4 = __splitIntoParts__(tmpX, 4)
+        y1, y2, y3, y4 = __splitIntoParts__(
+            [statByMinute.findARecord(i.timetz()).count for i in tmpX], 4)
+        maxMsgCount = max([max([max([max(y1)] + y2)] + y3)] + y4) + 1
+        with plt.style.context('ggplot'):
+            font = {
+                'family': 'serif',
+                'color': '#000000',
+                'weight': 'normal',
+                'size': 10
+            }
+            _, ((axes1, axes2), (axes3, axes4)) = plt.subplots(
+                2, 2, figsize=(24, 12), dpi=100)
+            axes1.xaxis.set_major_locator(HourLocator())
+            axes1.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
+            axes1.xaxis.set_minor_locator(MinuteLocator())
+            axes2.xaxis.set_major_locator(HourLocator())
+            axes2.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
+            axes2.xaxis.set_minor_locator(MinuteLocator())
+            axes3.xaxis.set_major_locator(HourLocator())
+            axes3.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
+            axes3.xaxis.set_minor_locator(MinuteLocator())
+            axes4.xaxis.set_major_locator(HourLocator())
+            axes4.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
+            axes4.xaxis.set_minor_locator(MinuteLocator())
+            axes1.set_ylim(0, maxMsgCount)
+            axes2.set_ylim(0, maxMsgCount)
+            axes3.set_ylim(0, maxMsgCount)
+            axes4.set_ylim(0, maxMsgCount)
+            axes1.plot(x1, y1, 'r-', lw=.5)
+            axes2.plot(x2, y2, 'r-', lw=.5)
+            axes3.plot(x3, y3, 'r-', lw=.5)
+            axes4.plot(x4, y4, 'r-', lw=.5)
+            axes1.set_xlabel('Time',
+                             fontdict=font, labelpad=12)
+            axes1.set_ylabel('#-of Messages Sent',
+                             fontdict=font, labelpad=12)
+            axes2.set_xlabel('Time',
+                             fontdict=font, labelpad=12)
+            axes2.set_ylabel('#-of Messages Sent',
+                             fontdict=font, labelpad=12)
+            axes3.set_xlabel('Time',
+                             fontdict=font, labelpad=12)
+            axes3.set_ylabel('#-of Messages Sent',
+                             fontdict=font, labelpad=12)
+            axes4.set_xlabel('Time',
+                             fontdict=font, labelpad=12)
+            axes4.set_ylabel('#-of Messages Sent',
+                             fontdict=font, labelpad=12)
+            axes1.set_title(title,
+                            fontdict=font, pad=12)
+            axes2.set_title(title,
+                            fontdict=font, pad=12)
+            axes3.set_title(title,
+                            fontdict=font, pad=12)
+            axes4.set_title(title,
+                            fontdict=font, pad=12)
+            plt.tight_layout()
+            plt.savefig(targetPath, bbox_inches='tight',
+                        pad_inches=.2, quality=95, dpi=100)
+            plt.close()
         return True
     except Exception:
         return False
