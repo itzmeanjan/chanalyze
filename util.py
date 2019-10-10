@@ -17,6 +17,7 @@ try:
     from model.message import Message
     from model.timePeriod import TimePeriod
     from model.msgInMinute import MessagesSentInMinute, MessagesSentInADay
+    from model.msgOnDate import MessagesSentOnDate
 except ImportError as e:
     print('[!]Module Unavailable : {}'.format(str(e)))
     exit(1)
@@ -121,7 +122,12 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
     except Exception:
         return False
 
-
+'''
+    Plots a chart, showing at which minute of
+    day ( there's 1440 minutes in a day )
+    this participant is how much active ( in this chat ),
+    over period of time, for which we've track record ( in exported chat )
+'''
 def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
     '''
         This is to be called for each element
@@ -255,6 +261,31 @@ def mergeMessagesFromUsersIntoSequence(chat: Chat) -> List[Message]:
                 nextMessageToBeVisitedForEachParticipant[j] += 1
                 break
     return sequence
+
+
+'''
+    Classifies a collection of messages
+    by Date on which they were sent.
+
+    So no doubt this may produce really large dataset in case
+    of lengthy chats
+
+    Returns a collection of MessagesSentOnDate objects, 
+    each of them holding # of messages trasmitted
+    among chat participants on that certain date
+'''
+
+
+def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOnDate]:
+    def __updateStat__(acc: List[MessagesSentOnDate], cur: Message) -> List[MessagesSentOnDate]:
+        found = reduce(lambda accInner, curInner: curInner if curInner.currentDate ==
+                       cur.timeStamp.date() else accInner, acc, None)
+        if not found:
+            acc.append(MessagesSentOnDate(cur.timeStamp.date(), 1))
+        else:
+            found.incrementBy()
+        return acc
+    return reduce(__updateStat__, messages, [])
 
 
 if __name__ == '__main__':
