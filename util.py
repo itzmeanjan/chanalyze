@@ -10,7 +10,7 @@ from math import ceil
 from datetime import datetime, date, time
 try:
     from matplotlib import pyplot as plt
-    from matplotlib.ticker import MultipleLocator, PercentFormatter
+    from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator
     from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator
     from model.chat import Chat
     from model.user import User
@@ -123,10 +123,20 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
 
 
 def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
+    '''
+        This is to be called for each element
+        present in `messages`, so that
+        we can keep track of #-of messages
+        sent in each minute
+    '''
     def __buildEachMinuteStatHolder__(holder: MessagesSentInADay, current: Message) -> MessagesSentInADay:
         holder.findARecord(current.timeStamp.timetz()).incrementCount()
         return holder
-
+    '''
+        Splits a collection of objects into
+        equal parts of requested count i.e.
+        returns a collection of ( sub ) collections
+    '''
     def __splitIntoParts__(whole, partCount: int):
         lengthOfEachPart = len(whole)//partCount
         return [whole[i*lengthOfEachPart:(i+1)*lengthOfEachPart]
@@ -141,6 +151,8 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
         x1, x2, x3, x4 = __splitIntoParts__(tmpX, 4)
         y1, y2, y3, y4 = __splitIntoParts__(
             [statByMinute.findARecord(i.timetz()).count for i in tmpX], 4)
+        # this will help us in setting max value on Y-axis
+        # and no doubt min value is 0
         maxMsgCount = max([max([max([max(y1)] + y2)] + y3)] + y4) + 1
         with plt.style.context('ggplot'):
             font = {
@@ -150,7 +162,7 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
                 'size': 10
             }
             _, ((axes1, axes2), (axes3, axes4)) = plt.subplots(
-                2, 2, figsize=(24, 12), dpi=100)
+                2, 2, figsize=(24, 12), dpi=100)  # creating 4 subplots in a Figure
             axes1.xaxis.set_major_locator(HourLocator())
             axes1.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
             axes1.xaxis.set_minor_locator(MinuteLocator())
@@ -163,10 +175,30 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
             axes4.xaxis.set_major_locator(HourLocator())
             axes4.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
             axes4.xaxis.set_minor_locator(MinuteLocator())
+            # setting formatting for Y-axis ( for all subplots )
+            axes1.yaxis.set_major_locator(MultipleLocator(1))
+            axes1.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
+            axes1.yaxis.set_minor_locator(NullLocator())
+            axes2.yaxis.set_major_locator(MultipleLocator(1))
+            axes2.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
+            axes2.yaxis.set_minor_locator(NullLocator())
+            axes3.yaxis.set_major_locator(MultipleLocator(1))
+            axes3.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
+            axes3.yaxis.set_minor_locator(NullLocator())
+            axes4.yaxis.set_major_locator(MultipleLocator(1))
+            axes4.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
+            axes4.yaxis.set_minor_locator(NullLocator())
+            # setting limit of tickers along X axis ( time axis )
+            # axes1.set_xlim(x1[0], x1[-1])
+            # axes2.set_xlim(x2[0], x2[-1])
+            # axes3.set_xlim(x3[0], x3[-1])
+            # axes4.set_xlim(x4[0], x4[-1])
+            # setting limit of ticker values along Y axis ( #-of messages sent in that minute )
             axes1.set_ylim(0, maxMsgCount)
             axes2.set_ylim(0, maxMsgCount)
             axes3.set_ylim(0, maxMsgCount)
             axes4.set_ylim(0, maxMsgCount)
+            # plotting data
             axes1.plot(x1, y1, 'r-', lw=.5)
             axes2.plot(x2, y2, 'r-', lw=.5)
             axes3.plot(x3, y3, 'r-', lw=.5)
@@ -197,11 +229,32 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
                             fontdict=font, pad=12)
             plt.tight_layout()
             plt.savefig(targetPath, bbox_inches='tight',
-                        pad_inches=.2, quality=95, dpi=100)
-            plt.close()
+                        pad_inches=.2, quality=95, dpi=100)  # exporting plotting into a file ( image )
+            plt.close()  # this is required, closing drawing canvas
         return True
     except Exception:
         return False
+
+
+'''
+    Takes a Chat object & returns a sequenced list of messages,
+    as they appeared in original chat
+'''
+
+
+def mergeMessagesFromUsersIntoSequence(chat: Chat) -> List[Message]:
+    currentMsgIdx = 0
+    nextMessageToBeVisitedForEachParticipant = [0]*len(chat.users)
+    sequence = []
+    for _ in range(chat.messageCount):
+        for j, k in enumerate(chat.users):
+            msg = k.messages[nextMessageToBeVisitedForEachParticipant[j]]
+            if msg.index == currentMsgIdx:
+                sequence.append(msg)
+                currentMsgIdx += 1
+                nextMessageToBeVisitedForEachParticipant[j] += 1
+                break
+    return sequence
 
 
 if __name__ == '__main__':
