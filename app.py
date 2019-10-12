@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import List
 from functools import reduce
 try:
-    from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute
+    from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute, mergeMessagesFromUsersIntoSequence, classifyMessagesOfChatByDate, plotActivenessOfChatByDate
     from model.chat import Chat
 except ImportError as e:
     print('[!]Module Unavailable: {}'.format(str(e)))
@@ -34,9 +34,6 @@ def main() -> float:
                              shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
                          'Visualization of {}\'s Participation in Group Chat'.format(shadeContactName(cur.name, percent=75)))] + acc,
                         Chat.importFromText('./data/group.txt').users, []),
-        '''
-        return __calculatePercentageOfSuccess__(
-            [
                 *reduce(lambda acc, cur:
                         [plotActivityOfUserByMinute(cur.messages,
                                                     './plots/detailedActivityOf{}InPrivateChatByMinute.svg'.format(
@@ -49,6 +46,15 @@ def main() -> float:
                                                         shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
                                                     'Activity Of {} in Group Chat By Minute'.format(shadeContactName(cur.name, percent=75)))] + acc,
                         Chat.importFromText('./data/group.txt').users, [])
+        '''
+        return __calculatePercentageOfSuccess__(
+            [
+                plotActivenessOfChatByDate(
+                    classifyMessagesOfChatByDate(mergeMessagesFromUsersIntoSequence(
+                        Chat.importFromText('./data/private.txt'))), './plots/activenessOfPrivateChatByDate.svg', 'Daily Activeness Of a Private Chat'),
+                plotActivenessOfChatByDate(
+                    classifyMessagesOfChatByDate(mergeMessagesFromUsersIntoSequence(
+                        Chat.importFromText('./data/group.txt'))), './plots/activenessOfGroupChatByDate.svg', 'Daily Activeness Of a Group Chat')
             ])
     except Exception:
         return 0.0

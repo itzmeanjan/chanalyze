@@ -10,8 +10,8 @@ from math import ceil
 from datetime import datetime, date, time
 try:
     from matplotlib import pyplot as plt
-    from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator
-    from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator
+    from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
+    from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
     from model.chat import Chat
     from model.user import User
     from model.message import Message
@@ -122,12 +122,15 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
     except Exception:
         return False
 
+
 '''
     Plots a chart, showing at which minute of
     day ( there's 1440 minutes in a day )
     this participant is how much active ( in this chat ),
     over period of time, for which we've track record ( in exported chat )
 '''
+
+
 def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
     '''
         This is to be called for each element
@@ -254,12 +257,17 @@ def mergeMessagesFromUsersIntoSequence(chat: Chat) -> List[Message]:
     sequence = []
     for _ in range(chat.messageCount):
         for j, k in enumerate(chat.users):
-            msg = k.messages[nextMessageToBeVisitedForEachParticipant[j]]
-            if msg.index == currentMsgIdx:
-                sequence.append(msg)
-                currentMsgIdx += 1
-                nextMessageToBeVisitedForEachParticipant[j] += 1
-                break
+            try:
+                # there may be a case when we're trying to reach to some message index for a certain user `k`, which doesn't even exist
+                # then we may require to handle one exception
+                msg = k.messages[nextMessageToBeVisitedForEachParticipant[j]]
+                if msg.index == currentMsgIdx:
+                    sequence.append(msg)
+                    currentMsgIdx += 1
+                    nextMessageToBeVisitedForEachParticipant[j] += 1
+                    break
+            except Exception:
+                continue
     return sequence
 
 
@@ -286,6 +294,53 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
             found.incrementBy()
         return acc
     return reduce(__updateStat__, messages, [])
+
+
+def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
+    def __accumulateData__(data: List[MessagesSentOnDate]) -> List[MessagesSentOnDate]:
+        def __updateCount__(acc: List[MessagesSentOnDate], cur: MessagesSentOnDate) -> List[MessagesSentOnDate]:
+            found = reduce(lambda accInner, curInner: curInner if cur.currentDate.day ==
+                           curInner.currentDate.day and cur.currentDate.month == curInner.currentDate.month
+                           else accInner, acc, None)
+            if not found:
+                acc.append(MessagesSentOnDate(date(
+                    1996, cur.currentDate.month, cur.currentDate.day), cur.count))
+            else:
+                found.incrementBy(cur.count)
+            return acc
+        return reduce(__updateCount__, data, [])
+    try:
+        directoryBuilder(targetPath)
+        messages = __accumulateData__(messages)
+        x = [i.currentDate for i in messages]
+        y = [i.count for i in messages]
+        with plt.style.context('Solarize_Light2'):
+            font = {
+                'family': 'serif',
+                'color': '#000000',
+                'weight': 'normal',
+                'size': 16
+            }
+            plt.figure(figsize=(24, 12), dpi=100)
+            plt.gca().xaxis.set_major_locator(MonthLocator())
+            plt.gca().xaxis.set_major_formatter(DateFormatter('%b'))
+            plt.gca().xaxis.set_minor_locator(DayLocator())
+            plt.gca().xaxis.set_minor_formatter(NullFormatter())
+            plt.gca().yaxis.set_major_locator(MultipleLocator(20))
+            plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x}'))
+            plt.gca().yaxis.set_minor_locator(MultipleLocator(10))
+            plt.ylim(-5, max(y)+5)
+            plt.plot(x, y, 'ro-', lw=.8)
+            plt.xlabel('Time', fontdict=font, labelpad=14)
+            plt.ylabel('#-of messages transferred', fontdict=font, labelpad=14)
+            plt.title(title, fontdict=font, pad=14)
+            plt.tight_layout()
+            plt.savefig(targetPath, bbox_inches='tight',
+                        pad_inches=.4, quality=95, dpi=100)  # exporting plotting into a file ( image )
+            plt.close()
+        return True
+    except Exception:
+        return False
 
 
 if __name__ == '__main__':
