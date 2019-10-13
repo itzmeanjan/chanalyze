@@ -28,13 +28,14 @@ def main() -> float:
 
     try:
         sourceFile, sinkDirectory = __getCMDArgs__()
-        if not sourceFile or not sinkDirectory or not exists(sourceFile):
+        # path to source file must be ending with `txt`, cause it's generally exported into a text file
+        if not sourceFile or not sinkDirectory or not sourceFile.endswith('txt') or not exists(sourceFile):
             __usage__()
             raise Exception('Improper invokation !!!')
         directoryBuilder(sinkDirectory)
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
-        print('[*]Working ...')
+        print('[+]chanalyze v0.0.1 - A simple WhatsApp Chat Analyzer\n[*]Working ...')
         return __calculatePercentageOfSuccess__(
             [
                 plotContributionInChatByUser(
