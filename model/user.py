@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from __future__ import annotations
 from typing import List
 try:
     from message import Message
@@ -15,7 +14,7 @@ except ImportError as e:
 
 
 class User(object):
-    def __init__(self, name: str, messages: List[Message]):
+    def __init__(self, name: str, messages):
         self.name = name
         self.messages = messages
 

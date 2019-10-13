@@ -1,11 +1,12 @@
 name: chanalyze
-version: 0.0.1
+version: "0.1.0"
 summary: A simple WhatsApp Chat Analyzer
 description: |
   A simple WhatsApp Chat Analyzer ( for both Private & Group chats ), made with <3
 
   It'll generate multiple plots to depict how participants of a Chat interacted :)
 confinement: devmode
+grade: devel
 base: core18
 license: MIT
 parts:
@@ -18,4 +19,4 @@ parts:
 
 apps:
   chanalyze:
-    command: bin/chanalyze
+    command: /usr/bin/python3 app.py
