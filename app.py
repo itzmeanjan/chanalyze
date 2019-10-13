@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 
 from __future__ import annotations
-from typing import List
+from typing import List, Tuple
 from functools import reduce
+from sys import argv
+from os.path import join, exists
 try:
-    from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute, mergeMessagesFromUsersIntoSequence, classifyMessagesOfChatByDate, plotActivenessOfChatByDate
+    from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute, mergeMessagesFromUsersIntoSequence, classifyMessagesOfChatByDate, plotActivenessOfChatByDate, directoryBuilder
     from model.chat import Chat
 except ImportError as e:
     print('[!]Module Unavailable: {}'.format(str(e)))
@@ -16,45 +18,48 @@ def main() -> float:
         return reduce(lambda acc, cur:
                       acc+1 if cur else acc, stat, 0)/len(stat) * 100
 
+    # extracts passed command line arguments
+    def __getCMDArgs__() -> Tuple[str, str]:
+        return tuple(argv[1:len(argv)]) if len(argv) == 3 else (None, None)
+
+    # prints usage of this script
+    def __usage__():
+        print('[+]chanalyze v0.0.1 - A simple WhatsApp Chat Analyzer\n\n\t$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
+
     try:
-        '''
-                plotContributionInChatByUser(Chat.importFromText(
-                    './data/private.txt'), './plots/participationInPrivateChatByUser.png', 'Visualization of Participation of Users in Chat'),
-                plotContributionInChatByUser(Chat.importFromText(
-                    './data/group.txt'), './plots/participationInGroupChatByUser.png', 'Visualization of Participation of Users in Chat'),
-                *reduce(lambda acc, cur:
-                        [plotContributionOfUserByHour(
-                            cur.messages, './plots/contributionInPrivateChatOf{}ByHour.png'.format(
-                                shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
-                            'Visualization of {}\'s Participation in Private Chat'.format(shadeContactName(cur.name, percent=75)))] + acc,
-                        Chat.importFromText('./data/private.txt').users, []),
-                *reduce(lambda acc, cur:
-                        [plotContributionOfUserByHour(
-                         cur.messages, './plots/contributionInGroupChatOf{}ByHour.png'.format(
-                             shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
-                         'Visualization of {}\'s Participation in Group Chat'.format(shadeContactName(cur.name, percent=75)))] + acc,
-                        Chat.importFromText('./data/group.txt').users, []),
-                *reduce(lambda acc, cur:
-                        [plotActivityOfUserByMinute(cur.messages,
-                                                    './plots/detailedActivityOf{}InPrivateChatByMinute.svg'.format(
-                                                        shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
-                                                    'Activity Of {} in Private Chat By Minute'.format(shadeContactName(cur.name, percent=75)))] + acc,
-                        Chat.importFromText('./data/private.txt').users, []),
-                *reduce(lambda acc, cur:
-                        [plotActivityOfUserByMinute(cur.messages,
-                                                    './plots/detailedActivityOf{}InGroupChatByMinute.svg'.format(
-                                                        shadeContactName('_'.join(cur.name.split(' ')), percent=75)),
-                                                    'Activity Of {} in Group Chat By Minute'.format(shadeContactName(cur.name, percent=75)))] + acc,
-                        Chat.importFromText('./data/group.txt').users, [])
-        '''
+        sourceFile, sinkDirectory = __getCMDArgs__()
+        if not sourceFile or not sinkDirectory or not exists(sourceFile):
+            __usage__()
+            raise Exception('Improper invokation !!!')
+        directoryBuilder(sinkDirectory)
+        # this instance will live throughout lifetime of this script
+        chat = Chat.importFromText(sourceFile)
+        print('[*]Working ...')
         return __calculatePercentageOfSuccess__(
             [
+                plotContributionInChatByUser(
+                    chat,
+                    join(sinkDirectory, 'participationInChatByUser.jpg'),
+                    'Participation of Users in Chat ( in terms of Percentage )'),
+                *reduce(lambda acc, cur:
+                        [plotContributionOfUserByHour(
+                            cur.messages,
+                            join(sinkDirectory, 'contributionInChatOf{}ByHour.jpg'.format(
+                                '_'.join(cur.name.split(' ')))),
+                            '{}\'s Contribution in Chat'.format(cur.name))] + acc,
+                        chat.users, []),
+                *reduce(lambda acc, cur:
+                        [plotActivityOfUserByMinute(
+                            cur.messages,
+                            join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.jpg'.format(
+                                '_'.join(cur.name.split(' ')))),
+                            'Detailed Activity Of {} in Chat By Minute'.format(cur.name))] + acc,
+                        chat.users, []),
                 plotActivenessOfChatByDate(
-                    classifyMessagesOfChatByDate(mergeMessagesFromUsersIntoSequence(
-                        Chat.importFromText('./data/private.txt'))), './plots/activenessOfPrivateChatByDate.svg', 'Daily Activeness Of a Private Chat'),
-                plotActivenessOfChatByDate(
-                    classifyMessagesOfChatByDate(mergeMessagesFromUsersIntoSequence(
-                        Chat.importFromText('./data/group.txt'))), './plots/activenessOfGroupChatByDate.svg', 'Daily Activeness Of a Group Chat')
+                    classifyMessagesOfChatByDate(
+                        mergeMessagesFromUsersIntoSequence(chat)),
+                    join(sinkDirectory, 'activenessOfChatByDate.jpg'),
+                    'Daily Activeness Of a Chat')
             ])
     except Exception:
         return 0.0
@@ -62,7 +67,7 @@ def main() -> float:
 
 if __name__ == '__main__':
     try:
-        print('[+] Success: {:.4f}%'.format(main()))
+        print('[#]Success: {:.4f}%'.format(main()))
     except KeyboardInterrupt:
         print('\n[!]Terminated')
     finally:

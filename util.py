@@ -23,10 +23,10 @@ except ImportError as e:
     exit(1)
 
 
-# checks whether directory of this path already exists or not.
-# if not, creates that directory
+# checks whether this directory already exists or not.
+# if not, creates it
 def directoryBuilder(targetPath: str):
-    dirName = dirname(abspath(targetPath))
+    dirName = abspath(targetPath)
     if not exists(dirName):
         mkdir(dirName)
 
@@ -44,12 +44,11 @@ def shadeContactName(name: str, percent: float = 50.0, where: str = 'f') -> str:
 
 def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str) -> bool:
     try:
-        directoryBuilder(targetPath)
         y = sorted([i.name for i in chat.users],
                    key=lambda e: len(chat.getUser(e).messages))
         y_pos = range(len(y))
         x = [len(chat.getUser(i).messages)/chat.messageCount*100 for i in y]
-        y = [shadeContactName(i, percent=75) for i in y]
+        # y = [shadeContactName(i, percent=75) for i in y]
         with plt.style.context('ggplot'):
             font = {
                 'family': 'serif',
@@ -89,7 +88,6 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
         return holder
 
     try:
-        directoryBuilder(targetPath)
         ranges = [TimePeriod(i, i+3600*3, 1)
                   for i in range(0, 86400, 3600*3)]
         splitted = reduce(__buildStatusHolder__, messages,
@@ -152,7 +150,6 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
                 for i in range(partCount)]
 
     try:
-        directoryBuilder(targetPath)
         statByMinute = reduce(__buildEachMinuteStatHolder__, messages, MessagesSentInADay([
             MessagesSentInMinute(i, j, 0) for i in range(0, 24) for j in range(0, 60)]))
         tmpX = [datetime.combine(date(2000, 1, 1), time(i.hour, i.minute))
@@ -296,6 +293,18 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
     return reduce(__updateStat__, messages, [])
 
 
+'''
+    Tries to depict how all participating users of a Chat
+    contributed to traffic of that Chat by Day
+
+    If we've a very long chat ( spreading across years ),
+    then we'll simply accumulate it into a year ( holding whole record into 365/366 days )
+
+    It can be useful in understanding at which day of Year,
+    people of this chat preferred to talk mostly
+'''
+
+
 def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
     def __accumulateData__(data: List[MessagesSentOnDate]) -> List[MessagesSentOnDate]:
         def __updateCount__(acc: List[MessagesSentOnDate], cur: MessagesSentOnDate) -> List[MessagesSentOnDate]:
@@ -304,13 +313,12 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
                            else accInner, acc, None)
             if not found:
                 acc.append(MessagesSentOnDate(date(
-                    1996, cur.currentDate.month, cur.currentDate.day), cur.count))
+                    1996, cur.currentDate.month, cur.currentDate.day), cur.count))  # using a year, which was leap year, cause it won't throw one error when trying to define a date having 29th day in Feb
             else:
                 found.incrementBy(cur.count)
             return acc
         return reduce(__updateCount__, data, [])
     try:
-        directoryBuilder(targetPath)
         messages = __accumulateData__(messages)
         x = [i.currentDate for i in messages]
         y = [i.count for i in messages]
