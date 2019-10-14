@@ -24,7 +24,7 @@ def main() -> float:
 
     # prints usage of this script
     def __usage__():
-        print('[+]chanalyze v0.0.1 - A simple WhatsApp Chat Analyzer\n\n\t$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
+        print('\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
 
     try:
         sourceFile, sinkDirectory = __getCMDArgs__()
@@ -35,7 +35,7 @@ def main() -> float:
         directoryBuilder(sinkDirectory)
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
-        print('[+]chanalyze v0.0.1 - A simple WhatsApp Chat Analyzer\n[*]Working ...')
+        print('\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
         return __calculatePercentageOfSuccess__(
             [
                 plotContributionInChatByUser(
