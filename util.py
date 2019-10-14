@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 from os.path import abspath, dirname, exists
 from os import mkdir
 from functools import reduce
@@ -11,6 +12,8 @@ try:
     from matplotlib import pyplot as plt
     from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
     from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
+    from model.chat import Chat
+    from model.message import Message, MessageIndex
     from model.timePeriod import TimePeriod
     from model.msgInMinute import MessagesSentInMinute, MessagesSentInADay
     from model.msgOnDate import MessagesSentOnDate
@@ -38,7 +41,7 @@ def shadeContactName(name: str, percent: float = 50.0, where: str = 'f') -> str:
 '''
 
 
-def plotContributionInChatByUser(chat, targetPath: str, title: str) -> bool:
+def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str) -> bool:
     try:
         y = sorted([i.name for i in chat.users],
                    key=lambda e: len(chat.getUser(e).messages))
@@ -73,9 +76,9 @@ def plotContributionInChatByUser(chat, targetPath: str, title: str) -> bool:
         return False
 
 
-def plotContributionOfUserByHour(messages, targetPath: str, title: str) -> bool:
+def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title: str) -> bool:
 
-    def __buildStatusHolder__(holder: Dict[str, int], current) -> Dict[str, int]:
+    def __buildStatusHolder__(holder: Dict[str, int], current: Message) -> Dict[str, int]:
         tm = current.timeStamp.timetz()
         seconds = tm.hour*3600 + tm.minute*60
         found = str(
@@ -125,14 +128,14 @@ def plotContributionOfUserByHour(messages, targetPath: str, title: str) -> bool:
 '''
 
 
-def plotActivityOfUserByMinute(messages, targetPath: str, title: str) -> bool:
+def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
     '''
         This is to be called for each element
         present in `messages`, so that
         we can keep track of #-of messages
         sent in each minute
     '''
-    def __buildEachMinuteStatHolder__(holder, current):
+    def __buildEachMinuteStatHolder__(holder: MessagesSentInADay, current: Message) -> MessagesSentInADay:
         holder.findARecord(current.timeStamp.timetz()).incrementCount()
         return holder
     '''
@@ -244,7 +247,7 @@ def plotActivityOfUserByMinute(messages, targetPath: str, title: str) -> bool:
 '''
 
 
-def mergeMessagesFromUsersIntoSequence(chat):
+def mergeMessagesFromUsersIntoSequence(chat: Chat) -> List[Message]:
     currentMsgIdx = 0
     nextMessageToBeVisitedForEachParticipant = [0]*len(chat.users)
     sequence = []
@@ -277,8 +280,8 @@ def mergeMessagesFromUsersIntoSequence(chat):
 '''
 
 
-def classifyMessagesOfChatByDate(messages):
-    def __updateStat__(acc, cur):
+def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOnDate]:
+    def __updateStat__(acc: List[MessagesSentOnDate], cur: Message) -> List[MessagesSentOnDate]:
         found = reduce(lambda accInner, curInner: curInner if curInner.currentDate ==
                        cur.timeStamp.date() else accInner, acc, None)
         if not found:
@@ -301,9 +304,9 @@ def classifyMessagesOfChatByDate(messages):
 '''
 
 
-def plotActivenessOfChatByDate(messages, targetPath: str, title: str) -> bool:
-    def __accumulateData__(data):
-        def __updateCount__(acc, cur):
+def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
+    def __accumulateData__(data: List[MessagesSentOnDate]) -> List[MessagesSentOnDate]:
+        def __updateCount__(acc: List[MessagesSentOnDate], cur: MessagesSentOnDate) -> List[MessagesSentOnDate]:
             found = reduce(lambda accInner, curInner: curInner if cur.currentDate.day ==
                            curInner.currentDate.day and cur.currentDate.month == curInner.currentDate.month
                            else accInner, acc, None)

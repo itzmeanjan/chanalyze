@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 from typing import List
 from datetime import time
 
@@ -15,10 +16,10 @@ class MessagesSentInMinute(object):
 
 
 class MessagesSentInADay(object):
-    def __init__(self, records):
+    def __init__(self, records: List[MessagesSentInMinute]):
         self.records = records
 
-    def findARecord(self, findIt: time):
+    def findARecord(self, findIt: time) -> MessagesSentInMinute:
         return self.records[findIt.hour*60 + findIt.minute]
 
 

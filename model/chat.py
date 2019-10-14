@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 from typing import List, Tuple
 from re import compile as reg_compile, Pattern
 from functools import reduce
@@ -22,7 +23,7 @@ except ImportError as e:
 class Chat(object):
     _messageCount = 0
 
-    def __init__(self, users):
+    def __init__(self, users: List[User]):
         self.users = users
 
     '''
@@ -39,12 +40,12 @@ class Chat(object):
         In case of failure, returns None
     '''
 
-    def getUser(self, name: str):
+    def getUser(self, name: str) -> User:
         return reduce(lambda acc, cur: cur if cur.name ==
                       name else acc, self.users, None)
 
     @staticmethod
-    def importFromText(filePath: str):
+    def importFromText(filePath: str) -> Chat:
         '''
             Regex to be used for extracting timestamp of
             a certain message from `*.txt` file
@@ -87,7 +88,7 @@ class Chat(object):
             Construction of User objects ( who participated in chat ) along with
             messages sent by them, done in this closure
         '''
-        def __createUserObject__(acc, content: Tuple[str, str]):
+        def __createUserObject__(acc: List[User], content: Tuple[str, str]) -> List[User]:
             # if we can't extract username from message text, it's not a message of this chat, so we just ignore it
             userName = __getUser__(content[1])
             if not userName:

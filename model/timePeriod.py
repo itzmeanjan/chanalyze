@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 from typing import Tuple
 
 
@@ -9,7 +10,7 @@ class TimePeriod(object):
         self.end = end
         self.step = step
 
-    def __contains__(self, value: int):
+    def __contains__(self, value: int) -> bool:
         return value >= self.init and value < self.end
 
     def __str__(self):
