@@ -44,6 +44,20 @@ class Chat(object):
         return reduce(lambda acc, cur: cur if cur.name ==
                       name else acc, self.users, None)
 
+    '''
+        Helps in finding which user sent a certain message,
+        by its index
+
+        In case of invalid message index, returns None
+    '''
+
+    def getUserByMessageId(self, idx: int) -> User:
+        return None if idx < 0 or idx >= self.messageCount else reduce(lambda acc, cur:
+                                                                       cur if reduce(
+                                                                           lambda accInner, curInner: True if curInner.index == idx else accInner,
+                                                                           cur.messages, False) else acc,
+                                                                       self.users, None)
+
     @staticmethod
     def importFromText(filePath: str) -> Chat:
         '''

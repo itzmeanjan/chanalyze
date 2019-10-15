@@ -5,7 +5,7 @@ from os.path import abspath, dirname, exists
 from os import mkdir
 from functools import reduce
 from typing import Dict, List
-from collections import OrderedDict
+from collections import OrderedDict, Counter
 from math import ceil
 from datetime import datetime, date, time
 try:
@@ -17,6 +17,7 @@ try:
     from model.timePeriod import TimePeriod
     from model.msgInMinute import MessagesSentInMinute, MessagesSentInADay
     from model.msgOnDate import MessagesSentOnDate
+    from model.msgDiff import DifferenceBetweenMessages
 except ImportError as e:
     print('[!]Module Unavailable : {}'.format(str(e)))
     exit(1)
@@ -348,6 +349,21 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
         return True
     except Exception:
         return False
+
+
+def getElapsedTimeBetweenAllMessages(chat: Chat):
+    messages = mergeMessagesFromUsersIntoSequence(chat)
+    diff = [DifferenceBetweenMessages(i, i+1, int((messages[i+1].timeStamp - j.timeStamp).total_seconds()))
+            for i, j in enumerate(messages[:-1])]
+    explicit = sorted(reduce(lambda acc, cur: [
+                      cur] + acc if cur not in acc else acc, diff, []),
+                      key=lambda e: e.elapsedTime)
+    meanDelay = sum([i.elapsedTime for i in explicit])//len(explicit)
+    # medianDelay = explicit[len(explicit)//2].elapsedTime
+    return (Counter(map(lambda e: chat.getUserByMessageId(e.msgOne).name,
+                        filter(lambda e: e.elapsedTime >= meanDelay, diff))),
+            Counter(map(lambda e: chat.getUserByMessageId(e.msgTwo).name,
+                        filter(lambda e: e.elapsedTime >= meanDelay, diff))))
 
 
 if __name__ == '__main__':
