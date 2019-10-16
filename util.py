@@ -415,9 +415,9 @@ def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: s
             axes2.xaxis.set_minor_formatter(NullFormatter())
             axes1.barh(y1, x1, align='center', color='deepskyblue', lw=1.5)
             axes2.barh(y2, x2, align='center', color='deepskyblue', lw=1.5)
-            axes1.set_xlabel('# of Conversations Started',
+            axes1.set_xlabel('Percentage of Conversations Started',
                              fontdict=font, labelpad=16)
-            axes2.set_xlabel('# of Conversations Started',
+            axes2.set_xlabel('Percentage of Conversations Started',
                              fontdict=font, labelpad=16)
             axes1.set_title(title[0], fontdict=font, pad=16)
             axes2.set_title(title[1], fontdict=font, pad=16)

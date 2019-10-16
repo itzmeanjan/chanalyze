@@ -334,7 +334,7 @@ _For Group Chat_
 
 ---
 
-### 5. Conversation Initializing Participant Identification _( using Mean & Median Delay )_ - Reflecting interest of Participant(s) towards Chat
+### 5. Conversation Initializing Person ( chat participant ) Identification _( using Mean & Median Delay )_ - Reflecting interest of Participant(s) towards Chat
 In a Chat _( may be Private or Group )_, there're multiple conversations, which start and end at different point of day _( may be spanning across multiple days )_, within that whole time period, for which we've Chat record.
 
 Now we need to identify those messages _( using index )_, which were at verge of these conversation(s) i.e. end of one conversation & init of next conversation.
