@@ -6,7 +6,7 @@ from functools import reduce
 from sys import argv
 from os.path import join, exists
 try:
-    from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute, mergeMessagesFromUsersIntoSequence, classifyMessagesOfChatByDate, plotActivenessOfChatByDate, directoryBuilder
+    from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute, mergeMessagesFromUsersIntoSequence, classifyMessagesOfChatByDate, plotActivenessOfChatByDate, directoryBuilder, getConversationInitializers, plotConversationInitializerStat
     from model.chat import Chat
 except ImportError as e:
     print('[!]Module Unavailable: {}'.format(str(e)))
@@ -35,7 +35,8 @@ def main() -> float:
         directoryBuilder(sinkDirectory)
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
-        print('\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
+        print(
+            '\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
         return __calculatePercentageOfSuccess__(
             [
                 plotContributionInChatByUser(
@@ -60,7 +61,12 @@ def main() -> float:
                     classifyMessagesOfChatByDate(
                         mergeMessagesFromUsersIntoSequence(chat)),
                     join(sinkDirectory, 'activenessOfChatByDate.jpg'),
-                    'Daily Activeness Of a Chat')
+                    'Daily Activeness Of a Chat'),
+                plotConversationInitializerStat(
+                    getConversationInitializers(chat),
+                    join(sinkDirectory, 'conversationInitializerStat.jpg'),
+                    ('Conversation Initializers\' Statistics ( using Mean Delay )',
+                     'Conversation Initializers\' Statistics ( using Median Delay )'))
             ])
     except Exception:
         return 0.0

@@ -4,7 +4,7 @@ from __future__ import annotations
 from os.path import abspath, dirname, exists
 from os import mkdir
 from functools import reduce
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from collections import OrderedDict, Counter
 from math import ceil
 from datetime import datetime, date, time
@@ -351,19 +351,84 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
         return False
 
 
-def getElapsedTimeBetweenAllMessages(chat: Chat):
+'''
+    Get how many times which chat participant started
+    a conversation ( applicable for both Private & Group chat )
+
+    By a conversation in a Chat, I mean, when a collection of messages
+    are/ were transmitted between these participants, after a certain delay
+    & may be lasted for a while
+
+    For finding that I calculated elapsed time between all messages
+    of this Chat. Now I find unique delay values. From that meanDelay
+    & medianDelay
+
+    Now I filter out all those message senders
+    who sent some message ( using message index )
+    having delay value greater than or equal to meanDelay
+    & medianDelay, and find frequency of them
+'''
+
+
+def getConversationInitializers(chat: Chat) -> Tuple[Counter, Counter]:
     messages = mergeMessagesFromUsersIntoSequence(chat)
     diff = [DifferenceBetweenMessages(i, i+1, int((messages[i+1].timeStamp - j.timeStamp).total_seconds()))
             for i, j in enumerate(messages[:-1])]
-    explicit = sorted(reduce(lambda acc, cur: [
-                      cur] + acc if cur not in acc else acc, diff, []),
-                      key=lambda e: e.elapsedTime)
-    meanDelay = sum([i.elapsedTime for i in explicit])//len(explicit)
-    # medianDelay = explicit[len(explicit)//2].elapsedTime
-    return (Counter(map(lambda e: chat.getUserByMessageId(e.msgOne).name,
+    unique = sorted(reduce(lambda acc, cur: [
+        cur] + acc if cur not in acc else acc, diff, []),
+        key=lambda e: e.elapsedTime)
+    meanDelay = sum([i.elapsedTime for i in unique])//len(unique)
+    medianDelay = unique[len(unique)//2].elapsedTime
+    return (Counter(map(lambda e: chat.getUserByMessageId(e.msgTwo).name,
                         filter(lambda e: e.elapsedTime >= meanDelay, diff))),
             Counter(map(lambda e: chat.getUserByMessageId(e.msgTwo).name,
-                        filter(lambda e: e.elapsedTime >= meanDelay, diff))))
+                        filter(lambda e: e.elapsedTime >= medianDelay, diff))))
+
+
+def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str]) -> bool:
+    try:
+        y1, y2 = [i for i in data[0]], [i for i in data[1]]
+        x1, x2 = [data[0][i] for i in y1], [data[1][i] for i in y2]
+        # contact name/ number shading is temporarily disabled
+        # y1, y2 = [shadeContactName(i, percent=75) for i in y1], [shadeContactName(i, percent=75) for i in y2]
+        total1, total2 = sum(x1), sum(x2)
+        x1, x2 = [i*100/total1 for i in x1], [i*100/total2 for i in x2]
+        with plt.style.context('Solarize_Light2'):
+            font = {
+                'family': 'serif',
+                'color': '#000000',
+                'weight': 'normal',
+                'size': 12
+            }
+            _, (axes1, axes2) = plt.subplots(1, 2, figsize=(24, 12), dpi=12)
+            # handling X-axis ticks & labels for subplot 1 ( on left )
+            axes1.set_xlim(0, 100)
+            axes1.xaxis.set_major_locator(MultipleLocator(10))
+            axes1.xaxis.set_major_formatter(PercentFormatter())
+            axes1.xaxis.set_minor_locator(MultipleLocator(1))
+            axes1.xaxis.set_minor_formatter(NullFormatter())
+            # handling X-axis ticks & labels for subplot 2 ( on right )
+            axes2.set_xlim(0, 100)
+            axes2.xaxis.set_major_locator(MultipleLocator(10))
+            axes2.xaxis.set_major_formatter(PercentFormatter())
+            axes2.xaxis.set_minor_locator(MultipleLocator(1))
+            axes2.xaxis.set_minor_formatter(NullFormatter())
+            axes1.barh(y1, x1, align='center', color='deepskyblue', lw=1.5)
+            axes2.barh(y2, x2, align='center', color='deepskyblue', lw=1.5)
+            axes1.set_xlabel('# of Conversations Started',
+                             fontdict=font, labelpad=16)
+            axes2.set_xlabel('# of Conversations Started',
+                             fontdict=font, labelpad=16)
+            axes1.set_title(title[0], fontdict=font, pad=16)
+            axes2.set_title(title[1], fontdict=font, pad=16)
+            plt.tight_layout()
+            plt.savefig(targetPath, bbox_inches='tight',
+                        pad_inches=.4, quality=95, dpi=100)
+            plt.close()  # don't miss this, it's required. Otherwise it might result into memory leaking
+            # And no doubt too much memory will stay occupied
+        return True
+    except Exception:
+        return False
 
 
 if __name__ == '__main__':
