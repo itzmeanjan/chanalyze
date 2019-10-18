@@ -11,17 +11,16 @@ except Exception as e:
 
 
 def findUnicodeCharacters(chat: Chat):
-    return map(getNameOfUnicodeChar,
-               reduce(lambda acc, cur:
-                      acc +
-                      reduce(lambda accInner, curInner:
-                             accInner +
-                             reduce(lambda accInnerDeep, curInnerDeep:
-                                    (accInnerDeep + [curInnerDeep]) if ord(
-                                        curInnerDeep) > 255 else accInnerDeep,
-                                    curInner.content, []),
-                             cur.messages, []),
-                      chat.users, []))
+    return reduce(lambda acc, cur:
+                  acc +
+                  reduce(lambda accInner, curInner:
+                         accInner +
+                         reduce(lambda accInnerDeep, curInnerDeep:
+                                (accInnerDeep + [curInnerDeep]) if ord(
+                                    curInnerDeep) > 255 else accInnerDeep,
+                                curInner.content, []),
+                         cur.messages, []),
+                  chat.users, [])
 
 
 if __name__ == '__main__':
