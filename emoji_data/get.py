@@ -53,6 +53,36 @@ def getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.tx
         return None
 
 
+'''
+    Utility function to generate a text file
+    containing all supported emojis ( as per Unicode v12.0 )
+    along with their corresponding numeric form ( integer value )
+
+    Example :
+
+    .
+    .
+    .
+    11088,⭐
+    11093,⭕
+    12336,〰
+    12349,〽
+    .
+    .
+    .
+'''
+
+
+def exportTo(targetFile: str = 'emoji.txt') -> bool:
+    try:
+        with open(targetFile, 'w') as fd:
+            fd.writelines(
+                map(lambda e: '{},{}\n'.format(e, chr(e)), getEmojiData()))
+        return True
+    except Exception:
+        return False
+
+
 if __name__ == '__main__':
     print('[!]This module is designed to be used as a backend handler')
     exit(0)
