@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 from requests import get as getContent
 from re import compile as regCompile
 from functools import reduce
