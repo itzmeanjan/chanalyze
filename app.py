@@ -8,6 +8,8 @@ from os.path import join, exists
 try:
     from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute, mergeMessagesFromUsersIntoSequence, classifyMessagesOfChatByDate, plotActivenessOfChatByDate, directoryBuilder, getConversationInitializers, plotConversationInitializerStat
     from model.chat import Chat
+    from emoji_data.get import getEmojiData
+    from emoji import findNonASCIICharactersinText, findEmojisInText, findEmojiUsage, plotEmojiUsage
 except ImportError as e:
     print('[!]Module Unavailable: {}'.format(str(e)))
     exit(1)
@@ -35,6 +37,7 @@ def main() -> float:
         directoryBuilder(sinkDirectory)
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
+        emojiData = getEmojiData()
         print(
             '\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
         return __calculatePercentageOfSuccess__(
@@ -66,7 +69,10 @@ def main() -> float:
                     getConversationInitializers(chat),
                     join(sinkDirectory, 'conversationInitializerStat.jpg'),
                     ('Conversation Initializers\' Statistics ( using Mean Delay )',
-                     'Conversation Initializers\' Statistics ( using Median Delay )'))
+                     'Conversation Initializers\' Statistics ( using Median Delay )')),
+                plotEmojiUsage(findEmojiUsage(findEmojisInText(
+                    findNonASCIICharactersinText(chat), emojiData)),
+                    join(sinkDirectory, 'emojiUsage.jpg'), 'Top 7 Emoji(s) used in Chat')
             ])
     except Exception:
         return 0.0
