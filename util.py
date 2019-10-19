@@ -42,19 +42,25 @@ def shadeContactName(name: str, percent: float = 50.0, where: str = 'f') -> str:
 '''
 
 
-def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str) -> bool:
+def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: int = 25) -> bool:
     try:
-        y = sorted([i.name for i in chat.users],
-                   key=lambda e: len(chat.getUser(e).messages))
+        # considering only top 25 contributors in Chat
+        y = reduce(lambda acc, cur: acc + [cur] if len(acc) < (top+1) else acc,
+                   sorted([i.name for i in chat.users],
+                          key=lambda e: len(chat.getUser(e).messages),
+                          reverse=True),
+                   [])
+        # y = sorted([i.name for i in chat.users],
+        #           key=lambda e: len(chat.getUser(e).messages), reverse=True)
         y_pos = range(len(y))
         x = [len(chat.getUser(i).messages)/chat.messageCount*100 for i in y]
         # y = [shadeContactName(i, percent=75) for i in y]
-        with plt.style.context('ggplot'):
+        with plt.style.context('Solarize_Light2'):
             font = {
                 'family': 'serif',
                 'color': '#000000',
                 'weight': 'normal',
-                'size': 14
+                'size': 10
             }
             plt.figure(figsize=(24, 12), dpi=100)
             plt.xlim((0, 100))
@@ -62,13 +68,13 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str) -> boo
             plt.gca().xaxis.set_major_formatter(PercentFormatter())
             plt.gca().xaxis.set_minor_locator(MultipleLocator(1))
             plt.barh(y_pos, x, align='center',
-                     color='steelblue', lw=1.6)
+                     color='deepskyblue', lw=1.6)
             plt.gca().yaxis.set_ticks(y_pos)
             plt.gca().yaxis.set_ticklabels(y)
             plt.xlabel('Percentage of Participation in Chat',
-                       fontdict=font, labelpad=16)
+                       fontdict=font, labelpad=12)
             plt.title(title,
-                      fontdict=font, pad=16)
+                      fontdict=font, pad=12)
             plt.tight_layout()
             plt.savefig(targetPath, bbox_inches='tight', pad_inches=.5)
             plt.close()
