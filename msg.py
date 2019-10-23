@@ -5,6 +5,7 @@ from functools import reduce
 from collections import Counter
 try:
     from model.chat import Chat
+    from math import floor
 except ImportError as e:
     print('[!]Module Unavailable : {}'.format(str(e)))
     exit(1)
@@ -18,11 +19,24 @@ def analyze(chat: Chat):
                chat.users, [])))
 
 
+def isASCIISpecialCharacter(c: str) -> bool:
+    # here I'm trying to determine whether this is an ASCII special char or not
+    return True if len(c) == 1 and (0 <= ord(c) <= 255) and not (96 < ord(c) < 123) and not (64 < ord(c) < 91) else False
+
+
+def getMedian(frm: int, to: int) -> int:
+    return floor((frm + to)/2)
+
+
 def removeSpecialCharacters(words: Counter) -> Counter:
-    keys = list(words.keys())
-    for i in keys:
-        # here I'm trying to determine whether current key is one of ASCII special keywords or not
-        if len(i) == 1 and (0 <= ord(i) <= 255) and not (96 < ord(i) < 123) and not (64 < ord(i) < 91):
+    # removing all those keys, which are having any combination of only ASCII special characters
+    for i in list(words.keys()):
+        if all(map(isASCIISpecialCharacter, i)):
+            words.pop(i)
+    medianV = getMedian(min(words.values()), max(words.values()))
+    # removing all those keys from dictionary, which are having value lesser than median
+    for i in list(words.keys()):
+        if words[i] < medianV:
             words.pop(i)
     return words
 
