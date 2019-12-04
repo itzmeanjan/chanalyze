@@ -22,7 +22,10 @@ class Message(object):
     '''
     @property
     def timeStamp(self) -> datetime:
-        return datetime.strptime(self._timeStamp, r'%d/%m/%y, %I:%M %p')
+        try:
+            return datetime.strptime(self._timeStamp, r'%d/%m/%y, %I:%M %p')
+        except ValueError:
+            return datetime.strptime(self._timeStamp, r'%d/%m/%Y, %I:%M %p')
 
     def __str__(self):
         super().__str__()

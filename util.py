@@ -281,7 +281,7 @@ def mergeMessagesFromUsersIntoSequence(chat: Chat) -> List[Message]:
     So no doubt this may produce really large dataset in case
     of lengthy chats
 
-    Returns a collection of MessagesSentOnDate objects, 
+    Returns a collection of MessagesSentOnDate objects,
     each of them holding # of messages trasmitted
     among chat participants on that certain date
 '''

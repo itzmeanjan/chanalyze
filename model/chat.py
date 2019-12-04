@@ -66,7 +66,7 @@ class Chat(object):
         '''
         def __getRegex__() -> Pattern:
             return reg_compile(
-                r'(\d{1,2}/\d{1,2}/\d{2}, \d{1,2}\:\d{1,2} [a|p]m)')
+                r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}\:\d{1,2} [a|p]m)')
 
         '''
             splitting whole *.txt file content using
@@ -120,6 +120,7 @@ class Chat(object):
             return acc
 
         obj = Chat([])
+        '''
         try:
             msgIndex = MessageIndex(0)
             with open(filePath, 'r') as fd:
@@ -130,6 +131,13 @@ class Chat(object):
             obj = None
         finally:
             return obj
+        '''
+        msgIndex = MessageIndex(0)
+        with open(filePath, 'r') as fd:
+            obj.users = reduce(
+                __createUserObject__, __groupify__(
+                    __splitByDate__(__getRegex__(), fd.read())), [])
+        return obj
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from typing import List, Tuple
+from traceback import format_exc
 from functools import reduce
 from sys import argv
 from os.path import join, exists
@@ -17,7 +18,7 @@ except ImportError as e:
 
 def main() -> float:
     def __calculatePercentageOfSuccess__(stat: List[bool]) -> float:
-        return reduce(lambda acc, cur:
+        return 0 if len(stat) == 0 else reduce(lambda acc, cur:
                       acc+1 if cur else acc, stat, 0)/len(stat) * 100
 
     # extracts passed command line arguments
@@ -74,7 +75,8 @@ def main() -> float:
                     findNonASCIICharactersinText(chat), emojiData)),
                     join(sinkDirectory, 'emojiUsage.jpg'), 'Top 7 Emoji(s) used in Chat')
             ])
-    except Exception:
+    except Exception as e:
+        print(format_exc())
         return 0.0
 
 
