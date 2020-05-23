@@ -1,3 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
+clear
 pip3 install -r requirements.txt
 echo -en "\n\n\x1b[6;30;47m[+]Append \x1b[6;30;41m$PWD\x1b[6;30;47m , to your system PATH\n[+]Now on you can invoke $ chanalyze path-to-exported-chat-file path-to-sink-dir\n\x1b[0m"
