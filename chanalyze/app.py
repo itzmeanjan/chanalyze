@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 from typing import List, Tuple
-from traceback import format_exc
 from functools import reduce
 from sys import argv
 from os.path import join, exists
@@ -39,24 +38,28 @@ def main():
         return tuple(argv[1:len(argv)]) if len(argv) == 3 else (None, None)
 
     # prints usage of this script
-    def __usage__():
-        print('\x1b[1;6;36;49m[+]chanalyze v0.3.0 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
+    def _usage():
+        print('\x1b[1;6;36;49m[+]chanalyze v0.3.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
 
     successRate = 0.0
 
     try:
         sourceFile, sinkDirectory = __getCMDArgs__()
         # path to source file must be ending with `txt`, cause it's generally exported into a text file
-        directoryBuilder(sinkDirectory)
-        if not (sourceFile and sinkDirectory and sourceFile.endswith('txt') and exists(sinkDirectory)):
-            __usage__()
+        if not (sourceFile and sinkDirectory and sourceFile and sinkDirectory):
+            _usage()
             raise Exception('Improper invokation !')
+
+        directoryBuilder(sinkDirectory)
+        if not (sourceFile.endswith('txt') and exists(sourceFile) and exists(sinkDirectory)):
+            _usage()
+            raise Exception('Invalid chat file')
 
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
         emojiData = getEmojiData()
         print(
-            '\x1b[1;6;36;49m[+]chanalyze v0.3.0 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
+            '\x1b[1;6;36;49m[+]chanalyze v0.3.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
 
         successRate = __calculatePercentageOfSuccess__(
             [
