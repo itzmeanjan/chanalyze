@@ -50,7 +50,7 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: i
         # y = sorted([i.name for i in chat.users],
         #           key=lambda e: len(chat.getUser(e).messages), reverse=True)
         y_pos = range(len(y))
-        x = [len(chat.getUser(i).messages)/chat.messageCount*100 for i in y]
+        x = [(len(chat.getUser(i).messages) / chat.messageCount) * 100 for i in y]
         # y = [shadeContactName(i, percent=75) for i in y]
         with plt.style.context('Solarize_Light2'):
             font = {
@@ -59,24 +59,25 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: i
                 'weight': 'normal',
                 'size': 10
             }
-            plt.figure(figsize=(24, 12), dpi=100)
+            fig = plt.figure(figsize=(24, 12), dpi=100)
             plt.xlim((0, 100))
-            plt.gca().xaxis.set_major_locator(MultipleLocator(10))
-            plt.gca().xaxis.set_major_formatter(PercentFormatter())
-            plt.gca().xaxis.set_minor_locator(MultipleLocator(1))
+            fig.gca().xaxis.set_major_locator(MultipleLocator(10))
+            fig.gca().xaxis.set_major_formatter(PercentFormatter())
+            fig.gca().xaxis.set_minor_locator(MultipleLocator(1))
+            fig.gca().yaxis.set_ticks(y_pos)
+            fig.gca().yaxis.set_ticklabels(y)
             plt.barh(y_pos, x, align='center',
                      color='deepskyblue', lw=1.6)
-            plt.gca().yaxis.set_ticks(y_pos)
-            plt.gca().yaxis.set_ticklabels(y)
             plt.xlabel('Percentage of Participation in Chat',
                        fontdict=font, labelpad=12)
             plt.title(title,
                       fontdict=font, pad=12)
-            plt.tight_layout()
-            plt.savefig(targetPath, bbox_inches='tight', pad_inches=.5)
-            plt.close()
+            fig.tight_layout()
+            fig.savefig(targetPath, bbox_inches='tight', pad_inches=.5)
+            plt.close(fig=fig)
         return True
-    except Exception:
+    except Exception as e:
+        print(e)
         return False
 
 
