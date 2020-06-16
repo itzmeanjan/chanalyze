@@ -76,8 +76,7 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: i
             fig.savefig(targetPath, bbox_inches='tight', pad_inches=.5)
             plt.close(fig=fig)
         return True
-    except Exception as e:
-        print(e)
+    except Exception:
         return False
 
 
