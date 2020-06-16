@@ -3,13 +3,9 @@
 from __future__ import annotations
 from functools import reduce
 from collections import Counter
-try:
-    from model.chat import Chat
-    from math import floor
-except ImportError as e:
-    print('[!]Module Unavailable : {}'.format(str(e)))
-    exit(1)
+from math import floor
 
+from .model.chat import Chat
 
 def analyze(chat: Chat):
     return removeSpecialCharacters(Counter(

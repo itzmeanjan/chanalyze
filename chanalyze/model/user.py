@@ -2,11 +2,8 @@
 
 from __future__ import annotations
 from typing import List
-try:
-    from message import Message
-except ImportError as e:
-    print('[!]Module Unavailable : {}'.format(str(e)))
-    exit(1)
+
+from .message import Message
 
 '''
     Holds all messages sent by a certain user, participated in a chat

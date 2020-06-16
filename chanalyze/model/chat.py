@@ -4,15 +4,9 @@ from __future__ import annotations
 from typing import List, Tuple
 from re import compile as reg_compile, Pattern
 from functools import reduce
-from sys import path
-from os.path import abspath, dirname
-try:
-    path.append(dirname(abspath(__file__)))
-    from message import Message, MessageIndex
-    from user import User
-except ImportError as e:
-    print('[!]Module Unavailable : {}'.format(str(e)))
-    exit(1)
+
+from .message import Message, MessageIndex
+from .user import User
 
 '''
     A whole chat, which is generally exported into a text file ( *.txt )
