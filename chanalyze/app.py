@@ -6,20 +6,33 @@ from traceback import format_exc
 from functools import reduce
 from sys import argv
 from os.path import join, exists
-try:
-    from util import plotContributionInChatByUser, plotContributionOfUserByHour, shadeContactName, plotActivityOfUserByMinute, mergeMessagesFromUsersIntoSequence, classifyMessagesOfChatByDate, plotActivenessOfChatByDate, directoryBuilder, getConversationInitializers, plotConversationInitializerStat
-    from model.chat import Chat
-    from emoji_data.get import getEmojiData
-    from emoji import findNonASCIICharactersinText, findEmojisInText, findEmojiUsage, plotEmojiUsage
-except ImportError as e:
-    print('[!]Module Unavailable: {}'.format(str(e)))
-    exit(1)
+
+from .util import (
+    plotContributionInChatByUser,
+    plotContributionOfUserByHour,
+    shadeContactName,
+    plotActivityOfUserByMinute,
+    mergeMessagesFromUsersIntoSequence,
+    classifyMessagesOfChatByDate,
+    plotActivenessOfChatByDate,
+    directoryBuilder,
+    getConversationInitializers,
+    plotConversationInitializerStat
+)
+from .model.chat import Chat
+from .emoji_data.get import getEmojiData
+from .emoji import (
+    findNonASCIICharactersinText,
+    findEmojisInText,
+    findEmojiUsage,
+    plotEmojiUsage
+)
 
 
 def main() -> float:
     def __calculatePercentageOfSuccess__(stat: List[bool]) -> float:
         return 0 if len(stat) == 0 else reduce(lambda acc, cur:
-                      acc+1 if cur else acc, stat, 0)/len(stat) * 100
+                                               acc+1 if cur else acc, stat, 0)/len(stat) * 100
 
     # extracts passed command line arguments
     def __getCMDArgs__() -> Tuple[str, str]:

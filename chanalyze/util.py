@@ -8,19 +8,16 @@ from typing import Dict, List, Tuple
 from collections import OrderedDict, Counter
 from math import ceil
 from datetime import datetime, date, time
-try:
-    from matplotlib import pyplot as plt
-    from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
-    from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
-    from model.chat import Chat
-    from model.message import Message, MessageIndex
-    from model.timePeriod import TimePeriod
-    from model.msgInMinute import MessagesSentInMinute, MessagesSentInADay
-    from model.msgOnDate import MessagesSentOnDate
-    from model.msgDiff import DifferenceBetweenMessages
-except ImportError as e:
-    print('[!]Module Unavailable : {}'.format(str(e)))
-    exit(1)
+from matplotlib import pyplot as plt
+from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
+from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
+
+from .model.chat import Chat
+from .model.message import Message, MessageIndex
+from .model.timePeriod import TimePeriod
+from .model.msgInMinute import MessagesSentInMinute, MessagesSentInADay
+from .model.msgOnDate import MessagesSentOnDate
+from .model.msgDiff import DifferenceBetweenMessages
 
 
 # checks whether this directory already exists or not.

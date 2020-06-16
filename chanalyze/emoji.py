@@ -5,13 +5,10 @@ from functools import reduce
 from unicodedata import name as getNameOfUnicodeChar
 from typing import List
 from collections import Counter
-try:
-    from matplotlib.colors import cnames
-    from matplotlib import pyplot as plt
-    from model.chat import Chat
-except Exception as e:
-    print('[!]Module Unavialable : {}'.format(str(e)))
-    exit(1)
+from matplotlib.colors import cnames
+from matplotlib import pyplot as plt
+
+from .model.chat import Chat
 
 '''
     Extracts all those non-ascii characters
