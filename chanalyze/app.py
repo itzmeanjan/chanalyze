@@ -88,7 +88,7 @@ def main() -> float:
                     findNonASCIICharactersinText(chat), emojiData)),
                     join(sinkDirectory, 'emojiUsage.jpg'), 'Top 7 Emoji(s) used in Chat')
             ])
-    except Exception as e:
+    except Exception:
         print(format_exc())
         return 0.0
 
