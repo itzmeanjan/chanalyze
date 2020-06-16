@@ -62,35 +62,35 @@ def main():
             [
                 plotContributionInChatByUser(
                     chat,
-                    join(sinkDirectory, 'participationInChatByUser.svg'),
+                    join(sinkDirectory, 'participationInChatByUser.png'),
                     'Participation of Users in Chat ( in terms of Percentage )'),
                 *reduce(lambda acc, cur:
                         [plotContributionOfUserByHour(
                             cur.messages,
-                            join(sinkDirectory, 'contributionInChatOf{}ByHour.svg'.format(
+                            join(sinkDirectory, 'contributionInChatOf{}ByHour.png'.format(
                                 '_'.join(cur.name.split(' ')))),
                             '{}\'s Contribution in Chat'.format(cur.name))] + acc,
                         chat.users, []),
                 *reduce(lambda acc, cur:
                         [plotActivityOfUserByMinute(
                             cur.messages,
-                            join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.svg'.format(
+                            join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.png'.format(
                                 '_'.join(cur.name.split(' ')))),
                             'Detailed Activity Of {} in Chat By Minute'.format(cur.name))] + acc,
                         chat.users, []),
                 plotActivenessOfChatByDate(
                     classifyMessagesOfChatByDate(
                         mergeMessagesFromUsersIntoSequence(chat)),
-                    join(sinkDirectory, 'activenessOfChatByDate.svg'),
+                    join(sinkDirectory, 'activenessOfChatByDate.png'),
                     'Daily Activeness Of a Chat'),
                 plotConversationInitializerStat(
                     getConversationInitializers(chat),
-                    join(sinkDirectory, 'conversationInitializerStat.svg'),
+                    join(sinkDirectory, 'conversationInitializerStat.png'),
                     ('Conversation Initializers\' Statistics ( using Mean Delay )',
                      'Conversation Initializers\' Statistics ( using Median Delay )')),
                 plotEmojiUsage(findEmojiUsage(findEmojisInText(
                     findNonASCIICharactersinText(chat), emojiData)),
-                    join(sinkDirectory, 'emojiUsage.svg'), 'Top 7 Emoji(s) used in Chat')
+                    join(sinkDirectory, 'emojiUsage.png'), 'Top 7 Emoji(s) used in Chat')
             ])
     except KeyboardInterrupt:
         print('\n[!]Terminated')
