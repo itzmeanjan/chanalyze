@@ -47,11 +47,11 @@ def main():
     try:
         sourceFile, sinkDirectory = __getCMDArgs__()
         # path to source file must be ending with `txt`, cause it's generally exported into a text file
+        directoryBuilder(sinkDirectory)
         if not (sourceFile and sinkDirectory and sourceFile.endswith('txt') and exists(sinkDirectory)):
             __usage__()
             raise Exception('Improper invokation !')
 
-        directoryBuilder(sinkDirectory)
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
         emojiData = getEmojiData()
@@ -62,35 +62,35 @@ def main():
             [
                 plotContributionInChatByUser(
                     chat,
-                    join(sinkDirectory, 'participationInChatByUser.jpg'),
+                    join(sinkDirectory, 'participationInChatByUser.svg'),
                     'Participation of Users in Chat ( in terms of Percentage )'),
                 *reduce(lambda acc, cur:
                         [plotContributionOfUserByHour(
                             cur.messages,
-                            join(sinkDirectory, 'contributionInChatOf{}ByHour.jpg'.format(
+                            join(sinkDirectory, 'contributionInChatOf{}ByHour.svg'.format(
                                 '_'.join(cur.name.split(' ')))),
                             '{}\'s Contribution in Chat'.format(cur.name))] + acc,
                         chat.users, []),
                 *reduce(lambda acc, cur:
                         [plotActivityOfUserByMinute(
                             cur.messages,
-                            join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.jpg'.format(
+                            join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.svg'.format(
                                 '_'.join(cur.name.split(' ')))),
                             'Detailed Activity Of {} in Chat By Minute'.format(cur.name))] + acc,
                         chat.users, []),
                 plotActivenessOfChatByDate(
                     classifyMessagesOfChatByDate(
                         mergeMessagesFromUsersIntoSequence(chat)),
-                    join(sinkDirectory, 'activenessOfChatByDate.jpg'),
+                    join(sinkDirectory, 'activenessOfChatByDate.svg'),
                     'Daily Activeness Of a Chat'),
                 plotConversationInitializerStat(
                     getConversationInitializers(chat),
-                    join(sinkDirectory, 'conversationInitializerStat.jpg'),
+                    join(sinkDirectory, 'conversationInitializerStat.svg'),
                     ('Conversation Initializers\' Statistics ( using Mean Delay )',
                      'Conversation Initializers\' Statistics ( using Median Delay )')),
                 plotEmojiUsage(findEmojiUsage(findEmojisInText(
                     findNonASCIICharactersinText(chat), emojiData)),
-                    join(sinkDirectory, 'emojiUsage.jpg'), 'Top 7 Emoji(s) used in Chat')
+                    join(sinkDirectory, 'emojiUsage.svg'), 'Top 7 Emoji(s) used in Chat')
             ])
     except KeyboardInterrupt:
         print('\n[!]Terminated')
