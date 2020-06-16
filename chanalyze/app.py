@@ -29,7 +29,7 @@ from .emoji import (
 )
 
 
-def main() -> float:
+def main():
     def __calculatePercentageOfSuccess__(stat: List[bool]) -> float:
         return 0 if len(stat) == 0 else reduce(lambda acc, cur:
                                                acc+1 if cur else acc, stat, 0)/len(stat) * 100
@@ -40,21 +40,25 @@ def main() -> float:
 
     # prints usage of this script
     def __usage__():
-        print('\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
+        print('\x1b[1;6;36;49m[+]chanalyze v0.3.0 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
+
+    successRate = 0.0
 
     try:
         sourceFile, sinkDirectory = __getCMDArgs__()
         # path to source file must be ending with `txt`, cause it's generally exported into a text file
-        if not sourceFile or not sinkDirectory or not sourceFile.endswith('txt') or not exists(sourceFile):
+        if not (sourceFile and sinkDirectory and sourceFile.endswith('txt') and exists(sinkDirectory)):
             __usage__()
-            raise Exception('Improper invokation !!!')
+            raise Exception('Improper invokation !')
+
         directoryBuilder(sinkDirectory)
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
         emojiData = getEmojiData()
         print(
             '\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
-        return __calculatePercentageOfSuccess__(
+
+        successRate = __calculatePercentageOfSuccess__(
             [
                 plotContributionInChatByUser(
                     chat,
@@ -88,15 +92,14 @@ def main() -> float:
                     findNonASCIICharactersinText(chat), emojiData)),
                     join(sinkDirectory, 'emojiUsage.jpg'), 'Top 7 Emoji(s) used in Chat')
             ])
-    except Exception:
-        print(format_exc())
-        return 0.0
+    except KeyboardInterrupt:
+        print('\n[!]Terminated')
+    except Exception as e:
+        print('{}\n'.format(e))
+    finally:
+        print('[+]Success : {} %'.format(successRate))
+        return
 
 
 if __name__ == '__main__':
-    try:
-        print('[#]Success: {:.4f}%'.format(main()))
-    except KeyboardInterrupt:
-        print('\n[!]Terminated')
-    finally:
-        exit(0)
+    main()
