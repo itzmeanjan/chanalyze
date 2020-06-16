@@ -56,7 +56,7 @@ def main():
         chat = Chat.importFromText(sourceFile)
         emojiData = getEmojiData()
         print(
-            '\x1b[1;6;36;49m[+]chanalyze v0.1.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
+            '\x1b[1;6;36;49m[+]chanalyze v0.3.0 - A simple WhatsApp Chat Analyzer\x1b[0m\n[*]Working ...')
 
         successRate = __calculatePercentageOfSuccess__(
             [
