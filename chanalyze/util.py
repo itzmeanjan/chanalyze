@@ -148,6 +148,9 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
         returns a collection of ( sub ) collections
     '''
     def __splitIntoParts__(whole, partCount: int):
+        if not whole:
+            return [None] * partCount
+
         lengthOfEachPart = len(whole)//partCount
         return [whole[i*lengthOfEachPart:(i+1)*lengthOfEachPart]
                 for i in range(partCount)]
@@ -158,8 +161,14 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
         tmpX = [datetime.combine(date(2000, 1, 1), time(i.hour, i.minute))
                 for i in statByMinute.records]
         x1, x2, x3, x4 = __splitIntoParts__(tmpX, 4)
+        if not (x1 and x2 and x3 and x4):
+            return False
+
         y1, y2, y3, y4 = __splitIntoParts__(
             [statByMinute.findARecord(i.timetz()).count for i in tmpX], 4)
+        if not (y1 and y2 and y3 and y4):
+            return False
+
         # this will help us in setting max value on Y-axis
         # and no doubt min value is 0
         maxMsgCount = max([max([max([max(y1)] + y2)] + y3)] + y4) + 1
@@ -380,6 +389,9 @@ def getConversationInitializers(chat: Chat) -> Tuple[Counter, Counter]:
     unique = sorted(reduce(lambda acc, cur: [
         cur] + acc if cur not in acc else acc, diff, []),
         key=lambda e: e.elapsedTime)
+    if not unique:
+        return (None, None)
+
     meanDelay = sum([i.elapsedTime for i in unique])//len(unique)
     medianDelay = unique[len(unique)//2].elapsedTime
     return (Counter(map(lambda e: chat.getUserByMessageId(e.msgTwo).name,
@@ -390,11 +402,17 @@ def getConversationInitializers(chat: Chat) -> Tuple[Counter, Counter]:
 
 def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str]) -> bool:
     try:
+        if not (data[0] and data[1]):
+            return False
+
         y1, y2 = [i for i in data[0]], [i for i in data[1]]
         x1, x2 = [data[0][i] for i in y1], [data[1][i] for i in y2]
         # contact name/ number shading is temporarily disabled
         # y1, y2 = [shadeContactName(i, percent=75) for i in y1], [shadeContactName(i, percent=75) for i in y2]
         total1, total2 = sum(x1), sum(x2)
+        if not (total1 and total2):
+            return False
+
         x1, x2 = [i*100/total1 for i in x1], [i*100/total2 for i in x2]
         with plt.style.context('Solarize_Light2'):
             font = {
