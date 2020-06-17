@@ -318,6 +318,23 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
 
 
 def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
+    def _determineMajorLocatorSpacing(data: List[int]) -> int:
+        '''
+            Determines how to place major & minor locators on both axes,
+            so that we don't over-populate axes
+
+            Max allowed number of major locators 20
+        '''
+        maxV = max(data)
+        # finds out next round number
+        maxV = maxV if maxV % 10 == 0 else (maxV - maxV % 10 + 10)
+
+        if (maxV // 20) < 5:
+            return 10
+        if (maxV // 20) in range(5, 21):
+            return 20
+        return round(maxV / 20)
+
     def __accumulateData__(data: List[MessagesSentOnDate]) -> List[MessagesSentOnDate]:
         def __updateCount__(acc: List[MessagesSentOnDate], cur: MessagesSentOnDate) -> List[MessagesSentOnDate]:
             found = reduce(lambda accInner, curInner: curInner if cur.currentDate.day ==
@@ -334,6 +351,7 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
         messages = __accumulateData__(messages)
         x = [i.currentDate for i in messages]
         y = [i.count for i in messages]
+        majorLocatorCount = _determineMajorLocatorSpacing(y)
         with plt.style.context('Solarize_Light2'):
             font = {
                 'family': 'serif',
@@ -345,10 +363,10 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
             plt.gca().xaxis.set_major_locator(MonthLocator())
             plt.gca().xaxis.set_major_formatter(DateFormatter('%b'))
             plt.gca().xaxis.set_minor_locator(DayLocator())
-            plt.gca().xaxis.set_minor_formatter(NullFormatter())
-            plt.gca().yaxis.set_major_locator(MultipleLocator(20))
+            plt.gca().xaxis.set_minor_formatter(DateFormatter('%d'))
+            plt.gca().yaxis.set_major_locator(MultipleLocator(majorLocatorCount))
             plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x}'))
-            plt.gca().yaxis.set_minor_locator(MultipleLocator(10))
+            plt.gca().yaxis.set_minor_locator(MultipleLocator(majorLocatorCount / 2))
             plt.ylim(-5, max(y)+5)
             plt.plot(x, y, 'ro-', lw=.8)
             plt.xlabel('Time', fontdict=font, labelpad=14)
