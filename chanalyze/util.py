@@ -363,7 +363,7 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
             plt.gca().xaxis.set_major_locator(MonthLocator())
             plt.gca().xaxis.set_major_formatter(DateFormatter('%b'))
             plt.gca().xaxis.set_minor_locator(DayLocator())
-            plt.gca().xaxis.set_minor_formatter(NullFormatter())
+            plt.gca().xaxis.set_minor_formatter(DateFormatter('%d'))
             plt.gca().yaxis.set_major_locator(MultipleLocator(majorLocatorCount))
             plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             plt.gca().yaxis.set_minor_locator(MultipleLocator(majorLocatorCount / 2))
