@@ -91,10 +91,10 @@ def main():
             _banner()
             raise Exception('Invalid chat file !')
 
+        _banner()
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
         emojiData = getEmojiData()
-        _banner()
 
         extension = makeOutputChoice()
         if not extension:
