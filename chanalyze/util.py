@@ -6,7 +6,7 @@ from os import mkdir
 from functools import reduce
 from typing import Dict, List, Tuple
 from collections import OrderedDict, Counter
-from math import ceil
+from math import ceil, sqrt
 from datetime import datetime, date, time
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
@@ -124,30 +124,40 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
         return False
 
 
-'''
-    Plots a chart, showing at which minute of
-    day ( there's 1440 minutes in a day )
-    this participant is how much active ( in this chat ),
-    over period of time, for which we've track record ( in exported chat )
-'''
-
-
 def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
     '''
-        This is to be called for each element
-        present in `messages`, so that
-        we can keep track of #-of messages
-        sent in each minute
+        Plots a chart, showing at which minute of
+        day ( there's 1440 minutes in a day )
+        this participant is how much active ( in this chat ),
+        over period of time, for which we've track record ( in exported chat )
     '''
+
+    def _determineMajorLocatorSpacing(maxV: int) -> int:
+        '''
+            Determines how to place major & minor locators on both axes,
+            so that we don't over-populate axes
+
+            Max allowed number of major locators 20
+        '''
+        maxV = maxV if maxV % 10 == 0 else (maxV - maxV % 10 + 10)
+        return round(maxV / round(sqrt(maxV)))
+
     def __buildEachMinuteStatHolder__(holder: MessagesSentInADay, current: Message) -> MessagesSentInADay:
+        '''
+            This is to be called for each element
+            present in `messages`, so that
+            we can keep track of #-of messages
+            sent in each minute
+        '''
         holder.findARecord(current.timeStamp.timetz()).incrementCount()
         return holder
-    '''
-        Splits a collection of objects into
-        equal parts of requested count i.e.
-        returns a collection of ( sub ) collections
-    '''
+
     def __splitIntoParts__(whole, partCount: int):
+        '''
+            Splits a collection of objects into
+            equal parts of requested count i.e.
+            returns a collection of ( sub ) collections
+        '''
         if not whole:
             return [None] * partCount
 
@@ -172,6 +182,7 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
         # this will help us in setting max value on Y-axis
         # and no doubt min value is 0
         maxMsgCount = max([max([max([max(y1)] + y2)] + y3)] + y4) + 1
+        locatorSpacingAlongY = _determineMajorLocatorSpacing(maxMsgCount)
         with plt.style.context('ggplot'):
             font = {
                 'family': 'serif',
@@ -194,16 +205,16 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
             axes4.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
             axes4.xaxis.set_minor_locator(MinuteLocator())
             # setting formatting for Y-axis ( for all subplots )
-            axes1.yaxis.set_major_locator(MultipleLocator(1))
+            axes1.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
             axes1.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes1.yaxis.set_minor_locator(NullLocator())
-            axes2.yaxis.set_major_locator(MultipleLocator(1))
+            axes2.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
             axes2.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes2.yaxis.set_minor_locator(NullLocator())
-            axes3.yaxis.set_major_locator(MultipleLocator(1))
+            axes3.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
             axes3.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes3.yaxis.set_minor_locator(NullLocator())
-            axes4.yaxis.set_major_locator(MultipleLocator(1))
+            axes4.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
             axes4.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes4.yaxis.set_minor_locator(NullLocator())
             # setting limit of tickers along X axis ( time axis )
