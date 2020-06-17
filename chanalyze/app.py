@@ -6,6 +6,7 @@ from functools import reduce
 from sys import argv
 from os.path import join, exists
 from matplotlib import pyplot as plt
+from time import time
 
 from .util import (
     plotContributionInChatByUser,
@@ -74,6 +75,8 @@ def main():
     def _banner():
         print('\x1b[1;6;36;49m[+]chanalyze v0.3.1 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
 
+    startTime = time()
+    endTime = startTime
     successRate = 0.0
 
     try:
@@ -134,12 +137,15 @@ def main():
                     findNonASCIICharactersinText(chat), emojiData)),
                     join(sinkDirectory, 'emojiUsage.{}'.format(extension)), 'Top 7 Emoji(s) used in Chat')
             ])
+        endTime = time()
     except KeyboardInterrupt:
         print('\n[!]Terminated')
     except Exception as e:
         print('[!]{}'.format(e))
     finally:
-        print('[+]Success : {} %'.format(successRate))
+        print('[+]Success : {} % in {}s'
+              .format(successRate,
+                      endTime - startTime))
         return
 
 
