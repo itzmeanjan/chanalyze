@@ -140,7 +140,7 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
             Max allowed number of major locators 20
         '''
         maxV = maxV if maxV % 10 == 0 else (maxV - maxV % 10 + 10)
-        return round(maxV / round(sqrt(maxV)))
+        return round(sqrt(maxV))
 
     def __buildEachMinuteStatHolder__(holder: MessagesSentInADay, current: Message) -> MessagesSentInADay:
         '''
@@ -205,16 +205,20 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
             axes4.xaxis.set_major_formatter(DateFormatter('%I:%M %p'))
             axes4.xaxis.set_minor_locator(MinuteLocator())
             # setting formatting for Y-axis ( for all subplots )
-            axes1.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
+            axes1.yaxis.set_major_locator(
+                MultipleLocator(locatorSpacingAlongY))
             axes1.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes1.yaxis.set_minor_locator(NullLocator())
-            axes2.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
+            axes2.yaxis.set_major_locator(
+                MultipleLocator(locatorSpacingAlongY))
             axes2.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes2.yaxis.set_minor_locator(NullLocator())
-            axes3.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
+            axes3.yaxis.set_major_locator(
+                MultipleLocator(locatorSpacingAlongY))
             axes3.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes3.yaxis.set_minor_locator(NullLocator())
-            axes4.yaxis.set_major_locator(MultipleLocator(locatorSpacingAlongY))
+            axes4.yaxis.set_major_locator(
+                MultipleLocator(locatorSpacingAlongY))
             axes4.yaxis.set_major_formatter(StrMethodFormatter('{x}'))
             axes4.yaxis.set_minor_locator(NullLocator())
             # setting limit of tickers along X axis ( time axis )
@@ -339,12 +343,7 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
         maxV = max(data)
         # finds out next round number
         maxV = maxV if maxV % 10 == 0 else (maxV - maxV % 10 + 10)
-
-        if (maxV // 20) < 5:
-            return 10
-        if (maxV // 20) in range(5, 21):
-            return 20
-        return round(maxV / 20)
+        return round(sqrt(maxV))
 
     def __accumulateData__(data: List[MessagesSentOnDate]) -> List[MessagesSentOnDate]:
         def __updateCount__(acc: List[MessagesSentOnDate], cur: MessagesSentOnDate) -> List[MessagesSentOnDate]:
