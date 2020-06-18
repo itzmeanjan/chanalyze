@@ -140,8 +140,10 @@ def main():
         endTime = time()
     except KeyboardInterrupt:
         print('\n[!]Terminated')
+        endTime = time()
     except Exception as e:
         print('[!]{}'.format(e))
+        endTime = time()
     finally:
         print('[+]Success : {} % in {}s'
               .format(successRate,
