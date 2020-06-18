@@ -15,17 +15,21 @@ from .user import User
 
 
 class Chat(object):
-    _messageCount = 0
 
     def __init__(self, users: List[User]):
         self.users = users
+        self._messageCount = 0
 
-    '''
-        Returns calculated # of messages present in this chat
-    '''
     @property
     def messageCount(self) -> int:
-        return sum([len(i.messages) for i in self.users])
+        '''
+            Returns calculated # of messages present in this chat
+        '''
+        return self._messageCount
+
+    @messageCount.setter
+    def messageCount(self, v):
+        self._messageCount = v
 
     '''
         Finds out whether a certain User participated in this chat or not
@@ -103,6 +107,10 @@ class Chat(object):
                 return acc  # returning in unchanged form
             msg = Message(msgIndex.index, __getMessage__(
                 content[1]), content[0])
+
+            # updating count of message in chat
+            obj.messageCount = obj.messageCount + 1
+
             # incrementing index for next message, which lets us sequentially ordering messages as they appeared in chat
             msgIndex.increment()
             found = reduce(lambda accInner, curInner: curInner if curInner.name ==
