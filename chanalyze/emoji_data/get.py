@@ -35,7 +35,13 @@ def getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.tx
         return [i for i in range(*[(int(j, base=16) + 1) if i == 1 else int(j, base=16)
                                    for i, j in enumerate(e.split('..'))])]
     try:
-        resp = getContent(url)
+        # without custom headers remote was blocking request, thinking it's a bot
+        resp = getContent(url, headers={
+            'Accept': 'text/html,application/xhtml+xml,application/xml,application/json;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Connection': 'keep-alive',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101 Firefox/71.0'
+        })
         if not resp.ok:
             raise Exception('Bad Response from Remote')
         # regex to filter out lines which are having emojis listed

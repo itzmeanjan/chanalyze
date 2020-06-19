@@ -107,7 +107,7 @@ def main():
                     chat,
                     join(sinkDirectory,
                          'participationInChatByUser.{}'.format(extension)),
-                    'Participation of Users in Chat [ {} - {} ]'.format(chat.startDate.date, chat.endDate.date)),
+                    'Participation of Users in Chat [ {} - {} ]'.format(str(chat.startDate.date()), str(chat.endDate.date()))),
                 *reduce(lambda acc, cur:
                         [plotContributionOfUserByHour(
                             cur.messages,
@@ -123,26 +123,26 @@ def main():
                             cur.messages,
                             join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.{}'.format(
                                 '_'.join(cur.name.split(' ')), extension)),
-                            'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'.format(cur.name, chat.startDate.date, chat.endDate.date))] + acc,
+                            'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'.format(cur.name, str(chat.startDate.date()), str(chat.endDate.date())))] + acc,
                         chat.users, []),
                 plotActivenessOfChatByDate(
                     classifyMessagesOfChatByDate(
                         mergeMessagesFromUsersIntoSequence(chat)),
                     join(sinkDirectory, 'activenessOfChatByDate.{}'.format(extension)),
-                    'Daily Activeness Of a Chat [ {} - {} ]'.format(chat.startDate.date, chat.endDate.date)),
+                    'Daily Activeness Of a Chat [ {} - {} ]'.format(str(chat.startDate.date()), str(chat.endDate.date()))),
                 plotConversationInitializerStat(
                     getConversationInitializers(chat),
                     join(sinkDirectory,
                          'conversationInitializerStat.{}'.format(extension)),
                     ('Conversation Initializers\' Statistics, using Mean Delay [ {} - {} ]'
-                     .format(chat.startDate.date, chat.endDate.date),
+                     .format(str(chat.startDate.date()), str(chat.endDate.date())),
                      'Conversation Initializers\' Statistics, using Median Delay [ {} - {} ]'
-                     .format(chat.startDate.date, chat.endDate.date))),
+                     .format(str(chat.startDate.date()), str(chat.endDate.date())))),
                 plotEmojiUsage(findEmojiUsage(findEmojisInText(
                     findNonASCIICharactersinText(chat), emojiData)),
                     join(sinkDirectory, 'emojiUsage.{}'.format(extension)
                          ), 'Top 7 Emoji(s) used in Chat [ {} - {} ]'
-                    .format(chat.startDate.date, chat.endDate.date))
+                    .format(str(chat.startDate.date()), str(chat.endDate.date())))
             ])
         endTime = time()
     except KeyboardInterrupt:
