@@ -24,7 +24,7 @@ from typing import List
 '''
 
 
-def getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.txt') -> List[int]:
+def _getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.txt') -> List[int]:
     '''
         There're certain cases where a code can be given
         in following form
@@ -65,7 +65,7 @@ def getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.tx
         return None
 
 
-def exportTo(sink: str = 'emoji.txt') -> bool:
+def exportToFile(sink: str = 'emoji.txt') -> List[int]:
     '''
         Utility function to generate a text file
         containing all supported emojis ( as per Unicode v12.0 )
@@ -86,12 +86,13 @@ def exportTo(sink: str = 'emoji.txt') -> bool:
     '''
 
     try:
+        data = _getEmojiData()
         with open(abspath(join(dirname(__file__), '..', sink)), 'w') as fd:
             fd.writelines(
-                map(lambda e: '{},{}\n'.format(e, chr(e)), getEmojiData()))
-        return True
+                map(lambda e: '{},{}\n'.format(e, chr(e)), data))
+        return data
     except Exception:
-        return False
+        return None
 
 
 def importFromFile(source: str = 'emoji.txt') -> List[int]:
@@ -103,8 +104,8 @@ def importFromFile(source: str = 'emoji.txt') -> List[int]:
     try:
         with open(abspath(join(dirname(__file__), '..', source)),
                   'r') as fd:
-            return map(lambda e: int(e.split(',')[0], base=10),
-                       fd.readlines())
+            return list(map(lambda e: int(e.split(',')[0], base=10),
+                            fd.readlines()))
     except Exception:
         return None
 

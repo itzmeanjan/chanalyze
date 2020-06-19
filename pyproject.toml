@@ -22,8 +22,7 @@ dev = ["flit"]
 [tool.flit.sdist]
 exclude=[
   "plots/*",
-  "_config.yml",
-  "chanalyze/emoji.txt"
+  "_config.yml"
 ]
 
 [tool.flit.scripts]

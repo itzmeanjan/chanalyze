@@ -22,7 +22,10 @@ from .util import (
     plotConversationInitializerStat
 )
 from .model.chat import Chat
-from .emoji_data.get import getEmojiData
+from .emoji_data.get import (
+    exportToFile,
+    importFromFile
+)
 from .emoji import (
     findNonASCIICharactersinText,
     findEmojisInText,
@@ -92,13 +95,10 @@ def main():
             _banner()
             raise Exception('Invalid chat file !')
 
-        # this where I'm planning to put `emoji.txt` file, for caching
-        directoryBuilder(join(getenv('HOME'), '.chanalyze'))
-
         _banner()
         # this instance will live throughout lifetime of this script
         chat = Chat.importFromText(sourceFile)
-        emojiData = getEmojiData()
+        emojiData = importFromFile() or exportToFile()
 
         extension = makeOutputChoice()
         if not extension:
