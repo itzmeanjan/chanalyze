@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import List, Tuple
 from re import compile as reg_compile, Pattern
 from functools import reduce
+from datetime import datetime
 
 from .message import Message, MessageIndex
 from .user import User
@@ -13,11 +14,18 @@ class Chat(object):
     '''
         A whole chat, which is generally exported into a text file ( *.txt )
         from WhatsApp, is read and processed & converted into Chat object.
+
+        *Now holding easily retrievable information related to chat time span,
+        can be useful in setting an informative title in plots*
     '''
 
     def __init__(self, users: List[User]):
         self.users = users
         self._messageCount = 0
+        # this two can be used in plot titles to denote
+        # chat expansion period in better way
+        self._startDate = None
+        self._endDate = None
 
     @property
     def messageCount(self) -> int:
@@ -29,6 +37,32 @@ class Chat(object):
     @messageCount.setter
     def messageCount(self, v):
         self._messageCount = v
+
+    @property
+    def startDate(self) -> datetime:
+        try:
+            return datetime.strptime(self._startDate, r'%d/%m/%y, %I:%M %p')
+        except ValueError:
+            return datetime.strptime(self._startDate, r'%d/%m/%Y, %I:%M %p')
+        except Exception:
+            return self._startDate
+
+    @startDate.setter
+    def startDate(self, dt):
+        self._startDate = dt
+
+    @property
+    def endDate(self) -> datetime:
+        try:
+            return datetime.strptime(self._endDate, r'%d/%m/%y, %I:%M %p')
+        except ValueError:
+            return datetime.strptime(self._endDate, r'%d/%m/%Y, %I:%M %p')
+        except Exception:
+            return self._endDate
+
+    @endDate.setter
+    def endDate(self, dt):
+        self._endDate = dt
 
     def getUser(self, name: str) -> User:
         '''
@@ -55,6 +89,11 @@ class Chat(object):
 
     @staticmethod
     def importFromText(filePath: str) -> Chat:
+        '''
+            Given text file path, returns chat object, 
+            containing whole chat, which can be 
+            easily played around with 
+        '''
 
         def __getRegex__() -> Pattern:
             '''
@@ -79,6 +118,11 @@ class Chat(object):
             grouped = []
             for i in range(0, len(splitted), 2):
                 grouped.append((splitted[i], splitted[i+1]))
+
+            # setting start and end time of chat under lens
+            obj.startDate = grouped[0][0]
+            obj.endDate = grouped[-1][0]
+
             return grouped
 
         def __getUser__(text: str) -> str:
@@ -126,7 +170,7 @@ class Chat(object):
             obj.users = reduce(
                 __createUserObject__, __groupify__(
                     __splitByDate__(__getRegex__(), fd.read())), [])
-        
+
         return obj
 
 
