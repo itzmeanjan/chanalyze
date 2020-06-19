@@ -107,7 +107,8 @@ def main():
                     chat,
                     join(sinkDirectory,
                          'participationInChatByUser.{}'.format(extension)),
-                    'Participation of Users in Chat [ {} - {} ]'.format(str(chat.startDate.date()), str(chat.endDate.date()))),
+                    'Participation of Users in Chat [ {} - {} ]'.format(chat.startDate.strftime('%d %b, %Y'),
+                                                                        chat.endDate.strftime('%d %b, %Y'))),
                 *reduce(lambda acc, cur:
                         [plotContributionOfUserByHour(
                             cur.messages,
@@ -115,34 +116,41 @@ def main():
                                 '_'.join(cur.name.split(' ')), extension)),
                             '{}\'s Contribution in Chat [ {} - {} ]'
                             .format(cur.name,
-                                    chat.startDate.date,
-                                    chat.endDate.date))] + acc,
+                                    chat.startDate.strftime('%d %b, %Y'),
+                                    chat.endDate.strftime('%d %b, %Y')))] + acc,
                         chat.users, []),
                 *reduce(lambda acc, cur:
                         [plotActivityOfUserByMinute(
                             cur.messages,
                             join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.{}'.format(
                                 '_'.join(cur.name.split(' ')), extension)),
-                            'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'.format(cur.name, str(chat.startDate.date()), str(chat.endDate.date())))] + acc,
+                            'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'.format(cur.name,
+                                                                                           chat.startDate.strftime(
+                                                                                               '%d %b, %Y'),
+                                                                                           chat.endDate.strftime('%d %b, %Y')))] + acc,
                         chat.users, []),
                 plotActivenessOfChatByDate(
                     classifyMessagesOfChatByDate(
                         mergeMessagesFromUsersIntoSequence(chat)),
                     join(sinkDirectory, 'activenessOfChatByDate.{}'.format(extension)),
-                    'Daily Activeness Of a Chat [ {} - {} ]'.format(str(chat.startDate.date()), str(chat.endDate.date()))),
+                    'Daily Activeness Of a Chat [ {} - {} ]'.format(chat.startDate.strftime('%d %b, %Y'),
+                                                                    chat.endDate.strftime('%d %b, %Y'))),
                 plotConversationInitializerStat(
                     getConversationInitializers(chat),
                     join(sinkDirectory,
                          'conversationInitializerStat.{}'.format(extension)),
                     ('Conversation Initializers\' Statistics, using Mean Delay [ {} - {} ]'
-                     .format(str(chat.startDate.date()), str(chat.endDate.date())),
+                     .format(chat.startDate.strftime('%d %b, %Y'),
+                             chat.endDate.strftime('%d %b, %Y')),
                      'Conversation Initializers\' Statistics, using Median Delay [ {} - {} ]'
-                     .format(str(chat.startDate.date()), str(chat.endDate.date())))),
+                     .format(chat.startDate.strftime('%d %b, %Y'),
+                             chat.endDate.strftime('%d %b, %Y')))),
                 plotEmojiUsage(findEmojiUsage(findEmojisInText(
                     findNonASCIICharactersinText(chat), emojiData)),
                     join(sinkDirectory, 'emojiUsage.{}'.format(extension)
                          ), 'Top 7 Emoji(s) used in Chat [ {} - {} ]'
-                    .format(str(chat.startDate.date()), str(chat.endDate.date())))
+                    .format(chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y')))
             ])
         endTime = time()
     except KeyboardInterrupt:
