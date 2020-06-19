@@ -5,6 +5,7 @@ from typing import List, Tuple, Dict
 from functools import reduce
 from sys import argv
 from os.path import join, exists
+from os import getenv
 from matplotlib import pyplot as plt
 from time import time
 
@@ -90,6 +91,9 @@ def main():
         if not (sourceFile.endswith('txt') and exists(sourceFile) and exists(sinkDirectory)):
             _banner()
             raise Exception('Invalid chat file !')
+
+        # this where I'm planning to put `emoji.txt` file, for caching
+        directoryBuilder(join(getenv('HOME'), '.chanalyze'))
 
         _banner()
         # this instance will live throughout lifetime of this script
