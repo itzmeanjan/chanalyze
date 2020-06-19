@@ -1,6 +1,12 @@
 #!/usr/bin/python3
 
 from __future__ import annotations
+from os import getenv
+from os.path import (
+    join,
+    dirname,
+    abspath
+)
 from requests import get as getContent
 from re import compile as regCompile
 from functools import reduce
@@ -11,14 +17,14 @@ from typing import List
     emojis from Unicode.org ( 1311 in count, as per v12.0 )
 
     Takes a target url ( from where it'll fetch these data ),
-    though a default value is provided, may be when next version 
+    though a default value is provided, may be when next version
     of unicode releases, I'll update default value.
 
     Returns all supported emojis as List[int]
 '''
 
 
-def getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.txt') -> List[int]:
+def _getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.txt') -> List[int]:
     '''
         There're certain cases where a code can be given
         in following form
@@ -59,34 +65,49 @@ def getEmojiData(url: str = 'https://unicode.org/Public/emoji/12.0/emoji-data.tx
         return None
 
 
-'''
-    Utility function to generate a text file
-    containing all supported emojis ( as per Unicode v12.0 )
-    along with their corresponding numeric form ( integer value )
+def exportToFile(sink: str = 'emoji.txt') -> List[int]:
+    '''
+        Utility function to generate a text file
+        containing all supported emojis ( as per Unicode v12.0 )
+        along with their corresponding numeric form ( integer value )
 
-    Example :
+        Example :
 
-    .
-    .
-    .
-    11088,⭐
-    11093,⭕
-    12336,〰
-    12349,〽
-    .
-    .
-    .
-'''
+        .
+        .
+        .
+        11088,⭐
+        11093,⭕
+        12336,〰
+        12349,〽
+        .
+        .
+        .
+    '''
 
-
-def exportTo(targetFile: str = 'emoji.txt') -> bool:
     try:
-        with open(targetFile, 'w') as fd:
+        data = _getEmojiData()
+        with open(abspath(join(dirname(__file__), '..', sink)), 'w') as fd:
             fd.writelines(
-                map(lambda e: '{},{}\n'.format(e, chr(e)), getEmojiData()))
-        return True
+                map(lambda e: '{},{}\n'.format(e, chr(e)), data))
+        return data
     except Exception:
-        return False
+        return None
+
+
+def importFromFile(source: str = 'emoji.txt') -> List[int]:
+    '''
+        Given path to emoji file, imports unicode unsigned integer data,
+        representing emojis, which can be used for generating plots
+    '''
+
+    try:
+        with open(abspath(join(dirname(__file__), '..', source)),
+                  'r') as fd:
+            return list(map(lambda e: int(e.split(',')[0], base=10),
+                            fd.readlines()))
+    except Exception:
+        return None
 
 
 if __name__ == '__main__':
