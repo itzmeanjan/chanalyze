@@ -85,7 +85,7 @@ def main():
                     q
                 )
             ),
-            list(
+            *list(
                 map(
                     lambda cur: Process(
                         target=plotContributionOfUserByHour,
@@ -103,7 +103,7 @@ def main():
                     chat.users
                 )
             ),
-            list(
+            *list(
                 map(
                     lambda cur: Process(
                         target=plotActivityOfUserByMinute,
@@ -177,6 +177,9 @@ def main():
             results.append(q.get())
             completed += 1
 
+        # closing communication channel
+        q.close()
+
         return _calculatePercentageOfSuccess(results)
 
     def _calculatePercentageOfSuccess(stat: List[bool]) -> float:
@@ -223,7 +226,7 @@ def main():
             raise Exception('Invalid output format !')
 
         print('[*]Working ...')
-        successRate = 0.0
+        successRate = _parallelize()
         endTime = time()
     except KeyboardInterrupt:
         print('\n[!]Terminated')
