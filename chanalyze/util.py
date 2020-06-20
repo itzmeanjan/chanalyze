@@ -11,6 +11,7 @@ from datetime import datetime, date, time
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
 from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
+from multiprocessing import Queue
 
 from .model.chat import Chat
 from .model.message import Message, MessageIndex
@@ -39,7 +40,7 @@ def shadeContactName(name: str, percent: float = 50.0, where: str = 'f') -> str:
 '''
 
 
-def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: int = 25) -> bool:
+def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, q: Queue, top: int = 25):
     try:
         # considering only top 25 contributors in Chat
         y = reduce(lambda acc, cur: acc + [cur] if len(acc) < (top+1) else acc,
@@ -75,12 +76,12 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: i
             fig.tight_layout()
             fig.savefig(targetPath, bbox_inches='tight', pad_inches=.5)
             plt.close(fig=fig)
-        return True
+        q.put(True)
     except Exception:
-        return False
+        q.put(False)
 
 
-def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title: str) -> bool:
+def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title: str, q: Queue):
 
     def __buildStatusHolder__(holder: Dict[str, int], current: Message) -> Dict[str, int]:
         tm = current.timeStamp.timetz()
@@ -119,12 +120,12 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.5)  # exporting plotted PIE chart
         plt.close()  # closing this figure on which we just plotted a PIE chart
-        return True
+        q.put(True)
     except Exception:
-        return False
+        q.put(False)
 
 
-def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
+def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str, q: Queue):
     '''
         Plots a chart, showing at which minute of
         day ( there's 1440 minutes in a day )
@@ -264,9 +265,9 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
             plt.savefig(targetPath, bbox_inches='tight',
                         pad_inches=.2, quality=95, dpi=100)  # exporting plotting into a file ( image )
             plt.close()  # this is required, closing drawing canvas
-        return True
+        q.put(True)
     except Exception:
-        return False
+        q.put(False)
 
 
 '''
@@ -332,7 +333,7 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
 '''
 
 
-def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
+def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str, q: Queue):
     def _determineMajorLocatorSpacing(data: List[int]) -> int:
         '''
             Determines how to place major & minor locators on both axes,
@@ -386,9 +387,9 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
             plt.savefig(targetPath, bbox_inches='tight',
                         pad_inches=.4, quality=95, dpi=100)  # exporting plotting into a file ( image )
             plt.close()
-        return True
+        q.put(True)
     except Exception:
-        return False
+        q.put(False)
 
 
 '''
@@ -428,7 +429,7 @@ def getConversationInitializers(chat: Chat) -> Tuple[Counter, Counter]:
                         filter(lambda e: e.elapsedTime >= medianDelay, diff))))
 
 
-def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str]) -> bool:
+def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str], q: Queue):
     try:
         if not (data[0] and data[1]):
             return False
@@ -475,9 +476,9 @@ def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: s
                         pad_inches=.4, quality=95, dpi=100)
             plt.close()  # don't miss this, it's required. Otherwise it might result into memory leaking
             # And no doubt too much memory will stay occupied
-        return True
+        q.put(True)
     except Exception:
-        return False
+        q.put(False)
 
 
 if __name__ == '__main__':

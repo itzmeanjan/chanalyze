@@ -8,6 +8,7 @@ from os.path import join, exists
 from os import getenv
 from matplotlib import pyplot as plt
 from time import time
+from multiprocessing import Process, Queue
 
 from .util import (
     plotContributionInChatByUser,
@@ -67,7 +68,14 @@ def _makeOutputChoice() -> str:
 
 
 def main():
+    def _parallelize():
+        pass
+        #q = Queue(5)
+
     def _calculatePercentageOfSuccess(stat: List[bool]) -> float:
+        '''
+            Calculates rate of success in plotting ops
+        '''
         return 0 if len(stat) == 0 else reduce(lambda acc, cur:
                                                acc+1 if cur else acc, stat, 0)/len(stat) * 100
 
