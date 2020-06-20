@@ -68,9 +68,116 @@ def _makeOutputChoice() -> str:
 
 
 def main():
-    def _parallelize():
-        pass
-        #q = Queue(5)
+    def _parallelize() -> float:
+        q = Queue(3)
+
+        procs = [
+            Process(
+                target=plotContributionInChatByUser,
+                args=(
+                    chat,
+                    join(sinkDirectory,
+                         'participationInChatByUser.{}'
+                         .format(extension)),
+                    'Participation of Users in Chat [ {} - {} ]'
+                    .format(chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y')),
+                    q
+                )
+            ),
+            list(
+                map(
+                    lambda cur: Process(
+                        target=plotContributionOfUserByHour,
+                        args=(
+                            cur.messages,
+                            join(sinkDirectory,
+                                 'contributionInChatOf{}ByHour.{}'.format(
+                                     '_'.join(cur.name.split(' ')), extension)),
+                            '{}\'s Contribution in Chat [ {} - {} ]'
+                            .format(cur.name,
+                                    chat.startDate.strftime('%d %b, %Y'),
+                                    chat.endDate.strftime('%d %b, %Y')),
+                            q
+                        )),
+                    chat.users
+                )
+            ),
+            list(
+                map(
+                    lambda cur: Process(
+                        target=plotActivityOfUserByMinute,
+                        args=(
+                            cur.messages,
+                            join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.{}'
+                                 .format(
+                                     '_'.join(cur.name.split(' ')), extension)),
+                            'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'
+                            .format(cur.name,
+                                    chat.startDate.strftime('%d %b, %Y'),
+                                    chat.endDate.strftime('%d %b, %Y')),
+                            q
+                        )),
+                    chat.users
+                )
+            ),
+            Process(
+                target=plotActivenessOfChatByDate,
+                args=(
+                    classifyMessagesOfChatByDate(
+                        mergeMessagesFromUsersIntoSequence(chat)),
+                    join(sinkDirectory, 'activenessOfChatByDate.{}'
+                         .format(extension)),
+                    'Daily Activeness Of a Chat [ {} - {} ]'
+                    .format(chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y')),
+                    q
+                )
+            ),
+            Process(
+                target=plotConversationInitializerStat,
+                args=(
+                    getConversationInitializers(chat),
+                    join(sinkDirectory,
+                         'conversationInitializerStat.{}'.format(extension)),
+                    ('Conversation Initializers\' Statistics, using Mean Delay [ {} - {} ]'
+                     .format(chat.startDate.strftime('%d %b, %Y'),
+                             chat.endDate.strftime('%d %b, %Y')),
+                     'Conversation Initializers\' Statistics, using Median Delay [ {} - {} ]'
+                     .format(chat.startDate.strftime('%d %b, %Y'),
+                             chat.endDate.strftime('%d %b, %Y'))),
+                    q
+                )
+            ),
+            Process(
+                target=plotEmojiUsage,
+                args=(
+                    findEmojiUsage(findEmojisInText(
+                        findNonASCIICharactersinText(chat),
+                        emojiData)),
+                    join(sinkDirectory,
+                         'emojiUsage.{}'.format(extension)),
+                    'Top 7 Emoji(s) used in Chat [ {} - {} ]'
+                    .format(chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y')),
+                    q
+                )
+            )
+        ]
+
+        for i in procs:
+            # starting all processes
+            i.start()
+
+        completed = 0
+        results = []
+
+        while completed < len(procs):
+            # reading response from worker process
+            results.append(q.get())
+            completed += 1
+
+        return _calculatePercentageOfSuccess(results)
 
     def _calculatePercentageOfSuccess(stat: List[bool]) -> float:
         '''
@@ -116,57 +223,7 @@ def main():
             raise Exception('Invalid output format !')
 
         print('[*]Working ...')
-        successRate = _calculatePercentageOfSuccess(
-            [
-                plotContributionInChatByUser(
-                    chat,
-                    join(sinkDirectory,
-                         'participationInChatByUser.{}'.format(extension)),
-                    'Participation of Users in Chat [ {} - {} ]'.format(chat.startDate.strftime('%d %b, %Y'),
-                                                                        chat.endDate.strftime('%d %b, %Y'))),
-                *reduce(lambda acc, cur:
-                        [plotContributionOfUserByHour(
-                            cur.messages,
-                            join(sinkDirectory, 'contributionInChatOf{}ByHour.{}'.format(
-                                '_'.join(cur.name.split(' ')), extension)),
-                            '{}\'s Contribution in Chat [ {} - {} ]'
-                            .format(cur.name,
-                                    chat.startDate.strftime('%d %b, %Y'),
-                                    chat.endDate.strftime('%d %b, %Y')))] + acc,
-                        chat.users, []),
-                *reduce(lambda acc, cur:
-                        [plotActivityOfUserByMinute(
-                            cur.messages,
-                            join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.{}'.format(
-                                '_'.join(cur.name.split(' ')), extension)),
-                            'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'.format(cur.name,
-                                                                                           chat.startDate.strftime(
-                                                                                               '%d %b, %Y'),
-                                                                                           chat.endDate.strftime('%d %b, %Y')))] + acc,
-                        chat.users, []),
-                plotActivenessOfChatByDate(
-                    classifyMessagesOfChatByDate(
-                        mergeMessagesFromUsersIntoSequence(chat)),
-                    join(sinkDirectory, 'activenessOfChatByDate.{}'.format(extension)),
-                    'Daily Activeness Of a Chat [ {} - {} ]'.format(chat.startDate.strftime('%d %b, %Y'),
-                                                                    chat.endDate.strftime('%d %b, %Y'))),
-                plotConversationInitializerStat(
-                    getConversationInitializers(chat),
-                    join(sinkDirectory,
-                         'conversationInitializerStat.{}'.format(extension)),
-                    ('Conversation Initializers\' Statistics, using Mean Delay [ {} - {} ]'
-                     .format(chat.startDate.strftime('%d %b, %Y'),
-                             chat.endDate.strftime('%d %b, %Y')),
-                     'Conversation Initializers\' Statistics, using Median Delay [ {} - {} ]'
-                     .format(chat.startDate.strftime('%d %b, %Y'),
-                             chat.endDate.strftime('%d %b, %Y')))),
-                plotEmojiUsage(findEmojiUsage(findEmojisInText(
-                    findNonASCIICharactersinText(chat), emojiData)),
-                    join(sinkDirectory, 'emojiUsage.{}'.format(extension)
-                         ), 'Top 7 Emoji(s) used in Chat [ {} - {} ]'
-                    .format(chat.startDate.strftime('%d %b, %Y'),
-                            chat.endDate.strftime('%d %b, %Y')))
-            ])
+        successRate = 0.0
         endTime = time()
     except KeyboardInterrupt:
         print('\n[!]Terminated')
