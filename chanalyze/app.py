@@ -34,7 +34,7 @@ from .emoji import (
 )
 
 
-def getSupportedOutputFormats() -> Dict[str, str]:
+def _getSupportedOutputFormats() -> Dict[str, str]:
     '''
         Tries to determine supported backends in host machine,
         only these formats can be used for exporting a plot
@@ -47,8 +47,8 @@ def getSupportedOutputFormats() -> Dict[str, str]:
     return formats
 
 
-def makeOutputChoice() -> str:
-    options = getSupportedOutputFormats()
+def _makeOutputChoice() -> str:
+    options = _getSupportedOutputFormats()
     if not options:
         return None
 
@@ -67,12 +67,12 @@ def makeOutputChoice() -> str:
 
 
 def main():
-    def __calculatePercentageOfSuccess__(stat: List[bool]) -> float:
+    def _calculatePercentageOfSuccess(stat: List[bool]) -> float:
         return 0 if len(stat) == 0 else reduce(lambda acc, cur:
                                                acc+1 if cur else acc, stat, 0)/len(stat) * 100
 
     # extracts passed command line arguments
-    def __getCMDArgs__() -> Tuple[str, str]:
+    def _getCMDArgs() -> Tuple[str, str]:
         return tuple(argv[1:len(argv)]) if len(argv) == 3 else (None, None)
 
     # prints usage of this script
@@ -84,7 +84,7 @@ def main():
     successRate = 0.0
 
     try:
-        sourceFile, sinkDirectory = __getCMDArgs__()
+        sourceFile, sinkDirectory = _getCMDArgs()
         # path to source file must be ending with `txt`, cause it's generally exported into a text file
         if not (sourceFile and sinkDirectory and sourceFile and sinkDirectory):
             _banner()
@@ -103,12 +103,12 @@ def main():
         if not emojiData:
             raise Exception('Unable to fetch emoji data')
 
-        extension = makeOutputChoice()
+        extension = _makeOutputChoice()
         if not extension:
             raise Exception('Invalid output format !')
 
         print('[*]Working ...')
-        successRate = __calculatePercentageOfSuccess__(
+        successRate = _calculatePercentageOfSuccess(
             [
                 plotContributionInChatByUser(
                     chat,
