@@ -75,13 +75,12 @@ def _calculatePercentageOfSuccess(stat: List[bool]) -> float:
                                            acc+1 if cur else acc, stat, 0)/len(stat) * 100
 
 
-def _parallelize(chat: Chat, emojiData: List[int], sinkDirectory: str, extension: str) -> float:
+def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, extension: str) -> float:
     '''
         Implements process based paralleism,
         for each plotting task there's a new process,
         returning result of computation to parent by writing to Queue
     '''
-    q = Queue(cpu_count())
 
     '''
         *list(
@@ -148,7 +147,7 @@ def _parallelize(chat: Chat, emojiData: List[int], sinkDirectory: str, extension
                 q
             )
         ),
-        '''
+        
 
     procs = [
         Process(
@@ -160,8 +159,7 @@ def _parallelize(chat: Chat, emojiData: List[int], sinkDirectory: str, extension
                      .format(extension)),
                 'Participation of Users in Chat [ {} - {} ]'
                 .format(chat.startDate.strftime('%d %b, %Y'),
-                        chat.endDate.strftime('%d %b, %Y')),
-                q
+                        chat.endDate.strftime('%d %b, %Y'))
             )
         ),
         Process(
@@ -174,25 +172,12 @@ def _parallelize(chat: Chat, emojiData: List[int], sinkDirectory: str, extension
                      'emojiUsage.{}'.format(extension)),
                 'Top 7 Emoji(s) used in Chat [ {} - {} ]'
                 .format(chat.startDate.strftime('%d %b, %Y'),
-                        chat.endDate.strftime('%d %b, %Y')),
-                q
+                        chat.endDate.strftime('%d %b, %Y'))
             )
         )
     ]
-
-    for i in procs:
-        # starting all processes
-        i.start()
-
-    print('Started all : {}'.format(len(procs)))
-
+    '''
     results = []
-    while len(results) < len(procs):
-        # reading response from worker process
-        results.append(q.get())
-
-    # closing communication channel
-    # q.close()
     return _calculatePercentageOfSuccess(results)
 
 
@@ -235,7 +220,8 @@ def main():
             raise Exception('Invalid output format !')
 
         print('[*]Working ...')
-        successRate = _parallelize(chat, emojiData, sinkDirectory, extension)
+        successRate = _parallelPlotting(
+            chat, emojiData, sinkDirectory, extension)
         endTime = time()
     except KeyboardInterrupt:
         print('\n[!]Terminated')

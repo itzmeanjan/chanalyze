@@ -21,26 +21,30 @@ from .model.msgOnDate import MessagesSentOnDate
 from .model.msgDiff import DifferenceBetweenMessages
 
 
-# checks whether this directory already exists or not.
-# if not, creates it
 def directoryBuilder(targetPath: str):
+    '''
+        Checks whether this directory already exists or not.
+        if not, creates it
+    '''
     dirName = abspath(targetPath)
     if not exists(dirName):
         mkdir(dirName)
 
 
-# shades first half of characters of Contact by `*`, for sake of privacy
 def shadeContactName(name: str, percent: float = 50.0, where: str = 'f') -> str:
-    return '*'*ceil(len(name)*percent/100) + name[ceil(len(name)*percent/100):] if where.lower() == 'f' else name[:-ceil(len(name)*percent/100)] + '*'*ceil(len(name)*percent/100)
+    '''
+        Shades first half of characters of Contact by `*`, for sake of privacy
+    '''
+    return '*'*ceil(len(name)*percent/100)\
+        + name[ceil(len(name)*percent/100):] if where.lower() == 'f' else name[:-ceil(len(name)*percent/100)]\
+        + '*'*ceil(len(name)*percent/100)
 
 
-'''
-    How a certain person contributed to a Chat between two persons ( Private )
-    or more ( Group ), is plotted into a Bar Chart ( shows contribution in percentage )
-'''
-
-
-def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, q: Queue, top: int = 25):
+def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: int = 25) -> bool:
+    '''
+        How much a certain person contributed to a Chat 
+        plotted into a Bar Chart ( shows contribution in terms of percentage )
+    '''
     try:
         # considering only top 25 contributors in Chat
         y = reduce(lambda acc, cur: acc + [cur] if len(acc) < (top+1) else acc,
@@ -76,12 +80,12 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, q: Que
             fig.tight_layout()
             fig.savefig(targetPath, bbox_inches='tight', pad_inches=.5)
             plt.close(fig=fig)
-        q.put(True)
+        return True
     except Exception:
-        q.put(False)
+        return False
 
 
-def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title: str, q: Queue):
+def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title: str) -> bool:
 
     def __buildStatusHolder__(holder: Dict[str, int], current: Message) -> Dict[str, int]:
         tm = current.timeStamp.timetz()
@@ -120,12 +124,12 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.5)  # exporting plotted PIE chart
         plt.close()  # closing this figure on which we just plotted a PIE chart
-        q.put(True)
+        return True
     except Exception:
-        q.put(False)
+        return False
 
 
-def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str, q: Queue):
+def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str):
     '''
         Plots a chart, showing at which minute of
         day ( there's 1440 minutes in a day )
@@ -265,18 +269,16 @@ def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: 
             plt.savefig(targetPath, bbox_inches='tight',
                         pad_inches=.2, quality=95, dpi=100)  # exporting plotting into a file ( image )
             plt.close()  # this is required, closing drawing canvas
-        q.put(True)
+        return True
     except Exception:
-        q.put(False)
-
-
-'''
-    Takes a Chat object & returns a sequenced list of messages,
-    as they appeared in original chat
-'''
+        return False
 
 
 def mergeMessagesFromUsersIntoSequence(chat: Chat) -> List[Message]:
+    '''
+        Takes a Chat object & returns a sequenced list of messages,
+        as they appeared in original chat
+    '''
     currentMsgIdx = 0
     nextMessageToBeVisitedForEachParticipant = [0]*len(chat.users)
     sequence = []
@@ -296,20 +298,18 @@ def mergeMessagesFromUsersIntoSequence(chat: Chat) -> List[Message]:
     return sequence
 
 
-'''
-    Classifies a collection of messages
-    by Date on which they were sent.
-
-    So no doubt this may produce really large dataset in case
-    of lengthy chats
-
-    Returns a collection of MessagesSentOnDate objects,
-    each of them holding # of messages trasmitted
-    among chat participants on that certain date
-'''
-
-
 def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOnDate]:
+    '''
+        Classifies a collection of messages
+        by Date on which they were sent.
+
+        So no doubt this may produce really large dataset in case
+        of lengthy chats
+
+        Returns a collection of MessagesSentOnDate objects,
+        each of them holding # of messages trasmitted
+        among chat participants on that certain date
+    '''
     def __updateStat__(acc: List[MessagesSentOnDate], cur: Message) -> List[MessagesSentOnDate]:
         found = reduce(lambda accInner, curInner: curInner if curInner.currentDate ==
                        cur.timeStamp.date() else accInner, acc, None)
@@ -321,19 +321,18 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
     return reduce(__updateStat__, messages, [])
 
 
-'''
-    Tries to depict how all participating users of a Chat
-    contributed to traffic of that Chat by Day
+def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str):
+    '''
+        Tries to depict how all participating users of a Chat
+        contributed to traffic of that Chat by Day
 
-    If we've a very long chat ( spreading across years ),
-    then we'll simply accumulate it into a year ( holding whole record into 365/366 days )
+        If we've a very long chat ( spreading across years ),
+        then we'll simply accumulate it into a year ( 
+        holding whole record into 365/366 days )
 
-    It can be useful in understanding at which day of Year,
-    people of this chat preferred to talk mostly
-'''
-
-
-def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str, q: Queue):
+        It can be useful in understanding at which day of Year,
+        people of this chat preferred to talk mostly
+    '''
     def _determineMajorLocatorSpacing(data: List[int]) -> int:
         '''
             Determines how to place major & minor locators on both axes,
@@ -387,31 +386,29 @@ def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: s
             plt.savefig(targetPath, bbox_inches='tight',
                         pad_inches=.4, quality=95, dpi=100)  # exporting plotting into a file ( image )
             plt.close()
-        q.put(True)
+        return True
     except Exception:
-        q.put(False)
-
-
-'''
-    Get how many times which chat participant started
-    a conversation ( applicable for both Private & Group chat )
-
-    By a conversation in a Chat, I mean, when a collection of messages
-    are/ were transmitted between these participants, after a certain delay
-    & may be lasted for a while
-
-    For finding that I calculated elapsed time between all messages
-    of this Chat. Now I find unique delay values. From that meanDelay
-    & medianDelay
-
-    Now I filter out all those message senders
-    who sent some message ( using message index )
-    having delay value greater than or equal to meanDelay
-    & medianDelay, and find frequency of them
-'''
+        return False
 
 
 def getConversationInitializers(chat: Chat) -> Tuple[Counter, Counter]:
+    '''
+        Get how many times which chat participant started
+        a conversation ( applicable for both Private & Group chat )
+
+        By a conversation in a Chat, I mean, when a collection of messages
+        are/ were transmitted between these participants, after a certain delay
+        & may be lasted for a while
+
+        For finding that I calculated elapsed time between all messages
+        of this Chat. Now I find unique delay values. From that meanDelay
+        & medianDelay
+
+        Now I filter out all those message senders
+        who sent some message ( using message index )
+        having delay value greater than or equal to meanDelay
+        & medianDelay, and find frequency of them
+    '''
     messages = mergeMessagesFromUsersIntoSequence(chat)
     diff = [DifferenceBetweenMessages(i, i+1, int((messages[i+1].timeStamp - j.timeStamp).total_seconds()))
             for i, j in enumerate(messages[:-1])]
@@ -429,7 +426,7 @@ def getConversationInitializers(chat: Chat) -> Tuple[Counter, Counter]:
                         filter(lambda e: e.elapsedTime >= medianDelay, diff))))
 
 
-def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str], q: Queue):
+def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str]):
     try:
         if not (data[0] and data[1]):
             return False
@@ -476,9 +473,9 @@ def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: s
                         pad_inches=.4, quality=95, dpi=100)
             plt.close()  # don't miss this, it's required. Otherwise it might result into memory leaking
             # And no doubt too much memory will stay occupied
-        q.put(True)
+        return True
     except Exception:
-        q.put(False)
+        return False
 
 
 if __name__ == '__main__':
