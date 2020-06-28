@@ -11,7 +11,7 @@ from datetime import datetime, date, time
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
 from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
-from multiprocessing import Queue
+import ray
 
 from .model.chat import Chat
 from .model.message import Message, MessageIndex
@@ -40,6 +40,7 @@ def shadeContactName(name: str, percent: float = 50.0, where: str = 'f') -> str:
         + '*'*ceil(len(name)*percent/100)
 
 
+@ray.remote
 def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: int = 25) -> bool:
     '''
         How much a certain person contributed to a Chat 
@@ -85,6 +86,7 @@ def plotContributionInChatByUser(chat: Chat, targetPath: str, title: str, top: i
         return False
 
 
+@ray.remote
 def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title: str) -> bool:
 
     def __buildStatusHolder__(holder: Dict[str, int], current: Message) -> Dict[str, int]:
@@ -129,7 +131,8 @@ def plotContributionOfUserByHour(messages: List[Message], targetPath: str, title
         return False
 
 
-def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str):
+@ray.remote
+def plotActivityOfUserByMinute(messages: List[Message], targetPath: str, title: str) -> bool:
     '''
         Plots a chart, showing at which minute of
         day ( there's 1440 minutes in a day )
@@ -321,7 +324,8 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
     return reduce(__updateStat__, messages, [])
 
 
-def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str):
+@ray.remote
+def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
     '''
         Tries to depict how all participating users of a Chat
         contributed to traffic of that Chat by Day
@@ -426,7 +430,8 @@ def getConversationInitializers(chat: Chat) -> Tuple[Counter, Counter]:
                         filter(lambda e: e.elapsedTime >= medianDelay, diff))))
 
 
-def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str]):
+@ray.remote
+def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: str, title: Tuple[str, str]) -> bool:
     try:
         if not (data[0] and data[1]):
             return False

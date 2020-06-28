@@ -8,7 +8,9 @@ from os.path import join, exists
 from os import getenv
 from matplotlib import pyplot as plt
 from time import time
-from multiprocessing import Process, Queue, cpu_count
+from multiprocessing import cpu_count
+import ray
+
 
 from .util import (
     plotContributionInChatByUser,
@@ -33,6 +35,9 @@ from .emoji import (
     findEmojiUsage,
     plotEmojiUsage
 )
+
+# initializing ray - powering concurrent processing of plotting ops !!!
+ray.init(num_cpus=cpu_count())
 
 
 def _getSupportedOutputFormats() -> Dict[str, str]:
@@ -77,108 +82,85 @@ def _calculatePercentageOfSuccess(stat: List[bool]) -> float:
 
 def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, extension: str) -> float:
     '''
-        Implements process based paralleism,
-        for each plotting task there's a new process,
-        returning result of computation to parent by writing to Queue
+        Implements process based paralleism using `ray` module,
+        all plotting work done concurrently !!!
     '''
-
-    '''
+    _ids = [
+        plotContributionInChatByUser.remote(
+            chat,
+            join(sinkDirectory,
+                 'participationInChatByUser.{}'
+                 .format(extension)),
+            'Participation of Users in Chat [ {} - {} ]'
+            .format(chat.startDate.strftime('%d %b, %Y'),
+                    chat.endDate.strftime('%d %b, %Y'))
+        ),
         *list(
             map(
-                lambda cur: Process(
-                    target=plotContributionOfUserByHour,
-                    args=(
-                        cur.messages,
-                        join(sinkDirectory,
-                             'contributionInChatOf{}ByHour.{}'.format(
-                                 '_'.join(cur.name.split(' ')), extension)),
-                        '{}\'s Contribution in Chat [ {} - {} ]'
-                        .format(cur.name,
-                                chat.startDate.strftime('%d %b, %Y'),
-                                chat.endDate.strftime('%d %b, %Y')),
-                        q
-                    )),
+                lambda cur:
+                plotContributionOfUserByHour.remote(
+                    cur.messages,
+                    join(sinkDirectory,
+                         'contributionInChatOf{}ByHour.{}'.format(
+                             '_'.join(cur.name.split(' ')), extension)),
+                    '{}\'s Contribution in Chat [ {} - {} ]'
+                    .format(cur.name,
+                            chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y'))
+                ),
                 chat.users
             )
         ),
         *list(
             map(
-                lambda cur: Process(
-                    target=plotActivityOfUserByMinute,
-                    args=(
-                        cur.messages,
-                        join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.{}'
-                             .format(
-                                 '_'.join(cur.name.split(' ')), extension)),
-                        'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'
-                        .format(cur.name,
-                                chat.startDate.strftime('%d %b, %Y'),
-                                chat.endDate.strftime('%d %b, %Y')),
-                        q
-                    )),
+                lambda cur:
+                plotActivityOfUserByMinute.remote(
+                    cur.messages,
+                    join(sinkDirectory, 'detailedActivityOf{}InChatByMinute.{}'
+                         .format(
+                             '_'.join(cur.name.split(' ')), extension)),
+                    'Detailed Activity Of {} in Chat By Minute [ {} - {} ]'
+                    .format(cur.name,
+                            chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y'))
+                ),
                 chat.users
             )
         ),
-        Process(
-            target=plotActivenessOfChatByDate,
-            args=(
-                classifyMessagesOfChatByDate(
-                    mergeMessagesFromUsersIntoSequence(chat)),
-                join(sinkDirectory, 'activenessOfChatByDate.{}'
-                     .format(extension)),
-                'Daily Activeness Of a Chat [ {} - {} ]'
-                .format(chat.startDate.strftime('%d %b, %Y'),
-                        chat.endDate.strftime('%d %b, %Y')),
-                q
-            )
+        plotActivenessOfChatByDate.remote(
+            classifyMessagesOfChatByDate(
+                mergeMessagesFromUsersIntoSequence(chat)),
+            join(sinkDirectory, 'activenessOfChatByDate.{}'
+                 .format(extension)),
+            'Daily Activeness Of a Chat [ {} - {} ]'
+            .format(chat.startDate.strftime('%d %b, %Y'),
+                    chat.endDate.strftime('%d %b, %Y'))
         ),
-        Process(
-            target=plotConversationInitializerStat,
-            args=(
-                getConversationInitializers(chat),
-                join(sinkDirectory,
-                     'conversationInitializerStat.{}'.format(extension)),
-                ('Conversation Initializers\' Statistics, using Mean Delay [ {} - {} ]'
-                 .format(chat.startDate.strftime('%d %b, %Y'),
-                         chat.endDate.strftime('%d %b, %Y')),
-                 'Conversation Initializers\' Statistics, using Median Delay [ {} - {} ]'
-                 .format(chat.startDate.strftime('%d %b, %Y'),
-                         chat.endDate.strftime('%d %b, %Y'))),
-                q
-            )
+        plotConversationInitializerStat.remote(
+            getConversationInitializers(chat),
+            join(sinkDirectory,
+                 'conversationInitializerStat.{}'.format(extension)),
+            ('Conversation Initializers\' Statistics, using Mean Delay [ {} - {} ]'
+             .format(chat.startDate.strftime('%d %b, %Y'),
+                     chat.endDate.strftime('%d %b, %Y')),
+             'Conversation Initializers\' Statistics, using Median Delay [ {} - {} ]'
+             .format(chat.startDate.strftime('%d %b, %Y'),
+                     chat.endDate.strftime('%d %b, %Y')))
         ),
-        
-
-    procs = [
-        Process(
-            target=plotContributionInChatByUser,
-            args=(
-                chat,
-                join(sinkDirectory,
-                     'participationInChatByUser.{}'
-                     .format(extension)),
-                'Participation of Users in Chat [ {} - {} ]'
-                .format(chat.startDate.strftime('%d %b, %Y'),
-                        chat.endDate.strftime('%d %b, %Y'))
-            )
-        ),
-        Process(
-            target=plotEmojiUsage,
-            args=(
-                findEmojiUsage(findEmojisInText(
-                    findNonASCIICharactersinText(chat),
-                    emojiData)),
-                join(sinkDirectory,
-                     'emojiUsage.{}'.format(extension)),
-                'Top 7 Emoji(s) used in Chat [ {} - {} ]'
-                .format(chat.startDate.strftime('%d %b, %Y'),
-                        chat.endDate.strftime('%d %b, %Y'))
-            )
+        plotEmojiUsage.remote(
+            findEmojiUsage(findEmojisInText(
+                findNonASCIICharactersinText(chat),
+                emojiData)),
+            join(sinkDirectory,
+                 'emojiUsage.{}'.format(extension)),
+            'Top 7 Emoji(s) used in Chat [ {} - {} ]'
+            .format(chat.startDate.strftime('%d %b, %Y'),
+                    chat.endDate.strftime('%d %b, %Y'))
         )
     ]
-    '''
-    results = []
-    return _calculatePercentageOfSuccess(results)
+
+    # awaiting result of all plotting functions invoked
+    return _calculatePercentageOfSuccess(ray.get(_ids))
 
 
 def main():
