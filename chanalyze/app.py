@@ -11,7 +11,6 @@ from time import time
 from multiprocessing import cpu_count
 import ray
 
-
 from .util import (
     plotContributionInChatByUser,
     plotContributionOfUserByHour,
@@ -215,6 +214,7 @@ def main():
         print('[+]Success : {} % in {}s'
               .format(successRate,
                       endTime - startTime))
+        ray.shutdown()
         return
 
 
