@@ -8,4 +8,4 @@ A simple WhatsApp Chat Analyzer ( for both Private & Group chats ), made with <3
 [+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )
 '''
 
-__version__ = '0.3.4'
+__version__ = '0.3.5'

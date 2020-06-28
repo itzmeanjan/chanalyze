@@ -7,6 +7,7 @@ from typing import List
 from collections import Counter
 from matplotlib.colors import cnames
 from matplotlib import pyplot as plt
+import ray
 
 from .model.chat import Chat
 
@@ -59,6 +60,7 @@ def findEmojiUsage(emojis: List[str]) -> Counter:
     return Counter(emojis)
 
 
+@ray.remote
 def plotEmojiUsage(emojis: Counter, targetPath: str, title: str, top: int = 7) -> bool:
     try:
         _tmpLabels = reduce(lambda acc, cur: acc + [cur] if len(acc) < (top+1) else acc, sorted(
