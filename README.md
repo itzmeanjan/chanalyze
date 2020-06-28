@@ -1,6 +1,10 @@
 # chanalyze
 
+![performance_improvement](performance.jpg)
+
 A simple WhatsApp Chat Analyzer ( for both Private &amp; Group chats ), made with :heart:
+
+**Now with concurrency support !!!**
 
 ## nomenclature
 
@@ -33,6 +37,3 @@ $ python3 -m pip install --user chanalyze
 - [x] [Conversation Initializing Chat Participant Identification _( using Mean & Median Delay )_ - Reflecting Participant's interest towards Chat](docs/conversationStartingPerson.md)
 - [x] [Top Emojis used in Chat](docs/emojiStat.md)
 
----
-
-**I'm starting work on generating animated plots from whatsapp chat data. More coming soon ...** :)
