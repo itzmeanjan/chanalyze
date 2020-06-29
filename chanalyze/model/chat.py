@@ -166,7 +166,7 @@ class Chat(object):
         obj = Chat([])
         msgIndex = MessageIndex(0)
 
-        with open(filePath, 'r') as fd:
+        with open(filePath, mode='r', encoding='utf-8', errors='ignore') as fd:
             obj.users = reduce(
                 __createUserObject__, __groupify__(
                     __splitByDate__(__getRegex__(), fd.read())), [])
