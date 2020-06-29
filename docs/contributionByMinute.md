@@ -16,144 +16,201 @@ Check them out.
 #### For Private Chat :
 1.
 
-![detailedActivityOfParticipantOne](../plots/detailedActivityOf*******oyInPrivateChatByMinute.svg)
+![detailedActivityOfParticipantOne](../plots/detailedActivityOf1InPrivateChatByMinute.svg)
 2.
 
-![detailedActivityOfParticipantTwo](../plots/detailedActivityOf******************atty_\)InPrivateChatByMinute.svg)
+![detailedActivityOfParticipantTwo](../plots/detailedActivityOf2InPrivateChatByMinute.svg)
 
 #### For Group Chat :
 1.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************SS\)InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf1InGroupChatByMinute.svg)
+
 2.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************597InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf2InGroupChatByMinute.svg)
+
 3.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************377InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf3InGroupChatByMinute.svg)
+
 4.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************965InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf4InGroupChatByMinute.svg)
+
 5.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************316InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf5InGroupChatByMinute.svg)
+
 6.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************895InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf6InGroupChatByMinute.svg)
+
 7.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************494InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf7InGroupChatByMinute.svg)
+
+
 8.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************013InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf8InGroupChatByMinute.svg)
+
+
 9.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf*************CSS\)InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf9InGroupChatByMinute.svg)
+
+
 10.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf**********749InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf10InGroupChatByMinute.svg)
+
+
 11.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************858InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf11InGroupChatByMinute.svg)
+
 12.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf*********SS\)InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf12InGroupChatByMinute.svg)
+
 13.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************537InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf13InGroupChatByMinute.svg)
+
 14.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************334InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf14InGroupChatByMinute.svg)
+
 15.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************422InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf15InGroupChatByMinute.svg)
+
 16.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************058InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf16InGroupChatByMinute.svg)
+
 17.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf*************8347InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf17InGroupChatByMinute.svg)
+
+
 18.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************456InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf18InGroupChatByMinute.svg)
+
+
 19.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************4775InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf19InGroupChatByMinute.svg)
+
 20.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************181InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf20InGroupChatByMinute.svg)
+
 21.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************691InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf21InGroupChatByMinute.svg)
+
 22.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************459InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf22InGroupChatByMinute.svg)
+
 23.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************093InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf23InGroupChatByMinute.svg)
+
 24.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************979InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf24InGroupChatByMinute.svg)
+
 25.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************697InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf25InGroupChatByMinute.svg)
+
 26.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************183InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf26InGroupChatByMinute.svg)
+
 27.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************502InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf27InGroupChatByMinute.svg)
+
+
 28.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************606InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf28InGroupChatByMinute.svg)
+
+
 29.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf*******oyInGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf29InGroupChatByMinute.svg)
+
+
 30.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************849InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf30InGroupChatByMinute.svg)
+
 31.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************116InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf31InGroupChatByMinute.svg)
+
 32.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************CSS\)InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf32InGroupChatByMinute.svg)
+
 33.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************421InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf33InGroupChatByMinute.svg)
+
 34.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************848InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf34InGroupChatByMinute.svg)
+
 35.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************963InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf35InGroupChatByMinute.svg)
+
 36.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************2_78InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf36InGroupChatByMinute.svg)
+
 37.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************051InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf37InGroupChatByMinute.svg)
+
+
 38.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf*********S\)InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf38InGroupChatByMinute.svg)
+
+
 39.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************454InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf39InGroupChatByMinute.svg)
+
 40.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************877InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf40InGroupChatByMinute.svg)
+
+
 41.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************592InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf41InGroupChatByMinute.svg)
+
 42.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************203InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf42InGroupChatByMinute.svg)
+
 43.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************425InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf43InGroupChatByMinute.svg)
+
 44.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************382InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf44InGroupChatByMinute.svg)
+
 45.
 
-![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf************669InGroupChatByMinute.svg)
+![detailedActivityOfParticipantInGroupChat](../plots/detailedActivityOf45InGroupChatByMinute.svg)
+

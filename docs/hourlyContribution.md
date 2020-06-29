@@ -12,9 +12,9 @@ I splitted a day into 8 equal parts and extracted statistics of activity ( mine 
 
 Following Pie charts show how two participants contributed to a Private chat i.e. how much active were they at which time period.
 
-![activityOfParticipantOne](../plots/contributionInPrivateChatOf*******oyByHour.png)
+![activityOfParticipantOne](../plots/contributionInPrivateChatOf1ByHour.png)
 
-![activityOfParticipantTwo](../plots/contributionInPrivateChatOf******************atty_\)ByHour.png)
+![activityOfParticipantTwo](../plots/contributionInPrivateChatOf2ByHour.png)
 
 Following Pie charts showing how participants were contributing in a Group Chat.
 
