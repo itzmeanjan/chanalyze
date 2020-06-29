@@ -95,7 +95,7 @@ class Chat(object):
             easily played around with 
         '''
 
-        def __getRegex__() -> Pattern:
+        def _getRegex() -> Pattern:
             '''
                 Regex to be used for extracting timestamp of
                 a certain message from `*.txt` file
@@ -103,14 +103,14 @@ class Chat(object):
             return reg_compile(
                 r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}\:\d{1,2} [a|p]m)')
 
-        def __splitByDate__(pattern: Pattern, content: str) -> List[str]:
+        def _splitByDate(pattern: Pattern, content: str) -> List[str]:
             '''
                 splitting whole *.txt file content using
                 date extraction regex we just built
             '''
             return pattern.split(content)[1:]
 
-        def __groupify__(splitted: List[str]) -> List[Tuple[str, str]]:
+        def _groupify(splitted: List[str]) -> List[Tuple[str, str]]:
             '''
                 In previous closure we splitted whole text file content by date,
                 which needs to be fixed by pairing messages with its corresponding timestamp
@@ -125,29 +125,29 @@ class Chat(object):
 
             return grouped
 
-        def __getUser__(text: str) -> str:
+        def _getUser(text: str) -> str:
             '''
                 Helps in extracting participating user name from message ( text )
             '''
             matchObj = reg_compile(r'(?<=\s-\s).+?(?=:)').search(text)
             return matchObj.group() if matchObj else ''
 
-        def __getMessage__(text: str) -> str:
+        def _getMessage(text: str) -> str:
             '''
                 Extracts actual message sent by a certain user using regex
             '''
             return reg_compile(r'\s-\s.+?(?=:):\s*').sub('', text)
 
-        def __createUserObject__(acc: List[User], content: Tuple[str, str]) -> List[User]:
+        def _createUserObject(acc: List[User], content: Tuple[str, str]) -> List[User]:
             '''
                 Construction of User objects ( who participated in chat ) along with
                 messages sent by them, done in this closure
             '''
             # if we can't extract username from message text, it's not a message of this chat, so we just ignore it
-            userName = __getUser__(content[1])
+            userName = _getUser(content[1])
             if not userName:
                 return acc  # returning in unchanged form
-            msg = Message(msgIndex.index, __getMessage__(
+            msg = Message(msgIndex.index, _getMessage(
                 content[1]), content[0])
 
             # updating count of message in chat
@@ -168,8 +168,8 @@ class Chat(object):
 
         with open(filePath, mode='r', encoding='utf-8', errors='ignore') as fd:
             obj.users = reduce(
-                __createUserObject__, __groupify__(
-                    __splitByDate__(__getRegex__(), fd.read())), [])
+                _createUserObject, _groupify(
+                    _splitByDate(_getRegex(), fd.read())), [])
 
         return obj
 
