@@ -499,7 +499,7 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
 
     for i in data:
         weekNumber.append('{} ( {}, {} )'.format(
-            i.currentDate.strftime('%U') + 1,
+            int(i.currentDate.strftime('%U'), base=10) + 1,
             i.currentDate.strftime('%B'),
             i.currentDate.strftime('%Y')))
         weekDay.append(i.currentDate.strftime('%A'))
@@ -513,7 +513,7 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
 
 
 @ray.remote
-def plotActivityHeatMap(data: pd.core.frame.DataFrame, targetPath: str, title: str) -> bool:
+def plotActivityHeatMap(data: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
     '''
         Plots heatmap of user activity across week days
     '''
@@ -521,7 +521,7 @@ def plotActivityHeatMap(data: pd.core.frame.DataFrame, targetPath: str, title: s
         if not data:
             return False
 
-        sns.set()
+        data = prepareHeatMapData(data)
         axes = sns.heatmap(data.pivot('weekDay', 'weekNumber',
                                       'msgCount'), cmap='Blues', lw=.5)
         axes.set_title(title)
@@ -531,7 +531,6 @@ def plotActivityHeatMap(data: pd.core.frame.DataFrame, targetPath: str, title: s
         plt.tight_layout()
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.4, quality=95, dpi=100)
-        plt.close()
         return True
     except Exception:
         return False

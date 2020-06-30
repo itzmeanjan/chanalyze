@@ -162,7 +162,7 @@ def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, exte
             map(
                 lambda cur:
                 plotActivityHeatMap.remote(
-                    prepareHeatMapData(cur.messages),
+                    classifyMessagesOfChatByDate(cur.messages),
                     join(sinkDirectory, 'activityHeatMapOf{}InChat.{}'
                          .format(
                              '_'.join(cur.name.split(' ')), extension)),
