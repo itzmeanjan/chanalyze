@@ -22,7 +22,6 @@ from .util import (
     directoryBuilder,
     getConversationInitializers,
     plotConversationInitializerStat,
-    prepareHeatMapData,
     plotActivityHeatMap
 )
 from .model.chat import Chat
@@ -162,7 +161,7 @@ def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, exte
             map(
                 lambda cur:
                 plotActivityHeatMap.remote(
-                    classifyMessagesOfChatByDate(cur.messages),
+                    cur.messages,
                     join(sinkDirectory, 'activityHeatMapOf{}InChat.{}'
                          .format(
                              '_'.join(cur.name.split(' ')), extension)),

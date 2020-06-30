@@ -498,10 +498,8 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
     msgCount = []
 
     for i in data:
-        weekNumber.append('{} ( {}, {} )'.format(
-            int(i.currentDate.strftime('%U'), base=10) + 1,
-            i.currentDate.strftime('%B'),
-            i.currentDate.strftime('%Y')))
+        weekNumber.append(int(i.currentDate.strftime('%U'),
+                              base=10) + 1)
         weekDay.append(i.currentDate.strftime('%A'))
         msgCount.append(i.count)
 
@@ -513,7 +511,7 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
 
 
 @ray.remote
-def plotActivityHeatMap(data: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
+def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> bool:
     '''
         Plots heatmap of user activity across week days
     '''
@@ -521,16 +519,19 @@ def plotActivityHeatMap(data: List[MessagesSentOnDate], targetPath: str, title: 
         if not data:
             return False
 
-        data = prepareHeatMapData(data)
-        axes = sns.heatmap(data.pivot('weekDay', 'weekNumber',
+        _data = prepareHeatMapData(classifyMessagesOfChatByDate(data))
+
+        plt.figure(figsize=(24, 12), dpi=100)
+        axes = sns.heatmap(_data.pivot('weekDay', 'weekNumber',
                                       'msgCount'), cmap='Blues', lw=.5)
         axes.set_title(title)
         axes.set_xlabel('Week of Year')
         axes.set_ylabel('Week Day')
-        plt.xticks(rotation=90)
+        # plt.xticks(rotation=90)
         plt.tight_layout()
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.4, quality=95, dpi=100)
+        plt.close()
         return True
     except Exception:
         return False
