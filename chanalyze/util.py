@@ -498,9 +498,13 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
     msgCount = []
 
     for i in data:
-        weekNumber.append(int(i.currentDate.strftime('%U'),
-                              base=10) + 1)
-        weekDay.append(i.currentDate.strftime('%A'))
+        weekNumber.append('{} in {}'.format(
+            int(i.currentDate.strftime('%U'),
+                base=10) + 1,
+            i.currentDate.strftime('%Y')
+        ))
+        weekDay.append('{}{}'.format(i.currentDate.strftime('%w'),
+                                     i.currentDate.strftime('%A')))
         msgCount.append(i.count)
 
     return pd.DataFrame({
@@ -526,23 +530,27 @@ def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> boo
             'size': 16
         }
 
-        _data = prepareHeatMapData(classifyMessagesOfChatByDate(data))
+        _pivot = prepareHeatMapData(classifyMessagesOfChatByDate(
+            data)).pivot('weekDay', 'weekNumber', 'msgCount')
 
         plt.figure(figsize=(24, 12), dpi=100)
-        axes = sns.heatmap(_data.pivot('weekDay', 'weekNumber',
-                                       'msgCount'), cmap='Blues', lw=.5)
+        axes = sns.heatmap(
+            _pivot,
+            cmap='Blues', lw=.5)
 
-        axes.set_title(title, fontdict=font, labelpad=14)
+        axes.set_yticklabels([i[1:] for i in list(_pivot.index)], rotation=0)
+        axes.set_title(title, fontdict=font, pad=14)
         axes.set_xlabel('Week of Year', fontdict=font, labelpad=14)
         axes.set_ylabel('Week Day', fontdict=font, labelpad=14)
-        # plt.xticks(rotation=90)
+        plt.xticks(rotation=90)
 
         plt.tight_layout()
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.4, quality=95, dpi=100)
         plt.close()
         return True
-    except Exception:
+    except Exception as e:
+        print(e)
         return False
 
 
