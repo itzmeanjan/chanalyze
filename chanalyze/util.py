@@ -13,6 +13,7 @@ from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormat
 from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
 import ray
 import pandas as pd
+import seaborn as sns
 
 from .model.chat import Chat
 from .model.message import Message, MessageIndex
@@ -325,30 +326,6 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
     return reduce(__updateStat__, messages, [])
 
 
-def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFrame:
-    '''
-        Given list of messages sent on a date, for a 
-        certain user for chat under inspection, it'll create a
-        pandas dataframe for preparaing data with {'weekNumber', 'weekDay', 'msgCount'}
-        column names, which can be used for plotting heatmap of chat,
-        depicting how much active ( in this chat ) user is across week days
-    '''
-    weekNumber = []
-    weekDay = []
-    msgCount = []
-
-    for i in data:
-        weekNumber.append(i.currentDate.strftime('%U'))
-        weekDay.append(i.currentDate.strftime('%A'))
-        msgCount.append(i.count)
-
-    return pd.DataFrame({
-        'weekNumber': weekNumber,
-        'weekDay': weekDay,
-        'msgCount': msgCount
-    }, columns=['weekNumber', 'weekDay', 'msgCount'])
-
-
 @ray.remote
 def plotActivenessOfChatByDate(messages: List[MessagesSentOnDate], targetPath: str, title: str) -> bool:
     '''
@@ -503,6 +480,58 @@ def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: s
                         pad_inches=.4, quality=95, dpi=100)
             plt.close()  # don't miss this, it's required. Otherwise it might result into memory leaking
             # And no doubt too much memory will stay occupied
+        return True
+    except Exception:
+        return False
+
+
+def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFrame:
+    '''
+        Given list of messages sent on a date, for a 
+        certain user for chat under inspection, it'll create a
+        pandas dataframe for preparaing data with {'weekNumber', 'weekDay', 'msgCount'}
+        column names, which can be used for plotting heatmap of chat,
+        depicting how much active ( in this chat ) user is across week days
+    '''
+    weekNumber = []
+    weekDay = []
+    msgCount = []
+
+    for i in data:
+        weekNumber.append('{} ( {}, {} )'.format(
+            i.currentDate.strftime('%U') + 1,
+            i.currentDate.strftime('%B'),
+            i.currentDate.strftime('%Y')))
+        weekDay.append(i.currentDate.strftime('%A'))
+        msgCount.append(i.count)
+
+    return pd.DataFrame({
+        'weekNumber': weekNumber,
+        'weekDay': weekDay,
+        'msgCount': msgCount
+    }, columns=['weekNumber', 'weekDay', 'msgCount'])
+
+
+@ray.remote
+def plotActivityHeatMap(data: pd.core.frame.DataFrame, targetPath: str, title: str) -> bool:
+    '''
+        Plots heatmap of user activity across week days
+    '''
+    try:
+        if not data:
+            return False
+
+        sns.set()
+        axes = sns.heatmap(data.pivot('weekDay', 'weekNumber',
+                                      'msgCount'), cmap='Blues', lw=.5)
+        axes.set_title(title)
+        axes.set_xlabel('Week of Year')
+        axes.set_ylabel('Week Day')
+        plt.xticks(rotation=90)
+        plt.tight_layout()
+        plt.savefig(targetPath, bbox_inches='tight',
+                    pad_inches=.4, quality=95, dpi=100)
+        plt.close()
         return True
     except Exception:
         return False
