@@ -498,7 +498,7 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
     msgCount = []
 
     for i in data:
-        weekNumber.append('{} in {}'.format(
+        weekNumber.append('Week {} of {}'.format(
             int(i.currentDate.strftime('%U'),
                 base=10) + 1,
             i.currentDate.strftime('%Y')
