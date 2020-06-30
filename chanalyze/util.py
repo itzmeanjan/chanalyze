@@ -12,6 +12,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
 from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
 import ray
+import pandas as pd
 
 from .model.chat import Chat
 from .model.message import Message, MessageIndex
@@ -322,6 +323,30 @@ def classifyMessagesOfChatByDate(messages: List[Message]) -> List[MessagesSentOn
             found.incrementBy()
         return acc
     return reduce(__updateStat__, messages, [])
+
+
+def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFrame:
+    '''
+        Given list of messages sent on a date, for a 
+        certain user for chat under inspection, it'll create a
+        pandas dataframe for preparaing data with {'weekNumber', 'weekDay', 'msgCount'}
+        column names, which can be used for plotting heatmap of chat,
+        depicting how much active ( in this chat ) user is across week days
+    '''
+    weekNumber = []
+    weekDay = []
+    msgCount = []
+
+    for i in data:
+        weekNumber.append(i.currentDate.strftime('%U'))
+        weekDay.append(i.currentDate.strftime('%A'))
+        msgCount.append(i.count)
+
+    return pd.DataFrame({
+        'weekNumber': weekNumber,
+        'weekDay': weekDay,
+        'msgCount': msgCount
+    }, columns=['weekNumber', 'weekDay', 'msgCount'])
 
 
 @ray.remote
