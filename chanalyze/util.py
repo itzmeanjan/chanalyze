@@ -519,15 +519,24 @@ def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> boo
         if not data:
             return False
 
+        font = {
+            'family': 'serif',
+            'color': '#000000',
+            'weight': 'normal',
+            'size': 16
+        }
+
         _data = prepareHeatMapData(classifyMessagesOfChatByDate(data))
 
         plt.figure(figsize=(24, 12), dpi=100)
         axes = sns.heatmap(_data.pivot('weekDay', 'weekNumber',
-                                      'msgCount'), cmap='Blues', lw=.5)
-        axes.set_title(title)
-        axes.set_xlabel('Week of Year')
-        axes.set_ylabel('Week Day')
+                                       'msgCount'), cmap='Blues', lw=.5)
+
+        axes.set_title(title, fontdict=font, labelpad=14)
+        axes.set_xlabel('Week of Year', fontdict=font, labelpad=14)
+        axes.set_ylabel('Week Day', fontdict=font, labelpad=14)
         # plt.xticks(rotation=90)
+
         plt.tight_layout()
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.4, quality=95, dpi=100)
