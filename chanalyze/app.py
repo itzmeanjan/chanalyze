@@ -21,7 +21,9 @@ from .util import (
     plotActivenessOfChatByDate,
     directoryBuilder,
     getConversationInitializers,
-    plotConversationInitializerStat
+    plotConversationInitializerStat,
+    prepareHeatMapData,
+    plotActivityHeatMap
 )
 from .model.chat import Chat
 from .emoji_data.get import (
@@ -155,6 +157,22 @@ def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, exte
             'Top 7 Emoji(s) used in Chat [ {} - {} ]'
             .format(chat.startDate.strftime('%d %b, %Y'),
                     chat.endDate.strftime('%d %b, %Y'))
+        ),
+        *list(
+            map(
+                lambda cur:
+                plotActivityHeatMap.remote(
+                    prepareHeatMapData(cur.messages),
+                    join(sinkDirectory, 'activityHeatMapOf{}InChat.{}'
+                         .format(
+                             '_'.join(cur.name.split(' ')), extension)),
+                    'Activity HeatMap Of {} in Chat [ {} - {} ]'
+                    .format(cur.name,
+                            chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y'))
+                ),
+                chat.users
+            )
         )
     ]
 
