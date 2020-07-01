@@ -21,7 +21,8 @@ from .util import (
     plotActivenessOfChatByDate,
     directoryBuilder,
     getConversationInitializers,
-    plotConversationInitializerStat
+    plotConversationInitializerStat,
+    plotActivityHeatMap
 )
 from .model.chat import Chat
 from .emoji_data.get import (
@@ -155,6 +156,22 @@ def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, exte
             'Top 7 Emoji(s) used in Chat [ {} - {} ]'
             .format(chat.startDate.strftime('%d %b, %Y'),
                     chat.endDate.strftime('%d %b, %Y'))
+        ),
+        *list(
+            map(
+                lambda cur:
+                plotActivityHeatMap.remote(
+                    cur.messages,
+                    join(sinkDirectory, 'activityHeatMapOf{}InChat.{}'
+                         .format(
+                             '_'.join(cur.name.split(' ')), extension)),
+                    'Activity HeatMap Of {} in Chat [ {} - {} ]'
+                    .format(cur.name,
+                            chat.startDate.strftime('%d %b, %Y'),
+                            chat.endDate.strftime('%d %b, %Y'))
+                ),
+                chat.users
+            )
         )
     ]
 
@@ -170,7 +187,7 @@ def main():
 
     # prints usage of this script
     def _banner():
-        print('\x1b[1;6;36;49m[+]chanalyze v0.3.6 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
+        print('\x1b[1;6;36;49m[+]chanalyze v0.3.7 - A simple WhatsApp Chat Analyzer\x1b[0m\n\n\t\x1b[3;30;47m$ chanalyze `path-to-exported-chat-file` `path-to-sink-directory`\x1b[0m\n\n[+]Author: Anjan Roy<anjanroy@yandex.com>\n[+]Source: https://github.com/itzmeanjan/chanalyze ( MIT Licensed )\n')
 
     startTime = time()
     endTime = startTime

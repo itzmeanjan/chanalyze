@@ -4,7 +4,7 @@ from __future__ import annotations
 from os.path import abspath, dirname, exists
 from os import mkdir
 from functools import reduce
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 from collections import OrderedDict, Counter
 from math import ceil, sqrt
 from datetime import datetime, date, time
@@ -12,6 +12,8 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
 from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
 import ray
+import pandas as pd
+import seaborn as sns
 
 from .model.chat import Chat
 from .model.message import Message, MessageIndex
@@ -480,6 +482,78 @@ def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: s
             # And no doubt too much memory will stay occupied
         return True
     except Exception:
+        return False
+
+
+def prepareHeatMapData(data: List[MessagesSentOnDate]) -> Tuple[List[Tuple[Any]], List[str]]:
+    '''
+        Given list of messages sent on a date, for a 
+        certain user for chat under inspection, it'll create a
+        pandas dataframe for preparaing data with {'weekNumber', 'weekDay', 'msgCount'}
+        column names, which can be used for plotting heatmap of chat,
+        depicting how much active ( in this chat ) user is across week days
+    '''
+    heatMapData = [[] for i in range(7)]
+    weekNumber = []
+
+    for i in data:
+
+        heatMapData[int(i.currentDate.strftime('%w'), base=10)].append(
+            (
+                'Week {} of {}'.format(
+                    int(i.currentDate.strftime('%U'),
+                        base=10) + 1,
+                    i.currentDate.strftime('%Y')
+                ),
+                i.count
+            ))
+
+        if 'Week {} of {}'.format(int(i.currentDate.strftime('%U'), base=10) + 1, i.currentDate.strftime('%Y')) not in weekNumber:
+            weekNumber.append(
+                'Week {} of {}'.format(
+                    int(i.currentDate.strftime('%U'), base=10) + 1,
+                    i.currentDate.strftime('%Y'))
+            )
+    return heatMapData, weekNumber
+
+
+@ray.remote
+def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> bool:
+    '''
+        Plots heatmap of user activity across week days
+    '''
+    try:
+        if not data:
+            return False
+
+        font = {
+            'family': 'serif',
+            'color': '#000000',
+            'weight': 'normal',
+            'size': 16
+        }
+
+        _pivot = prepareHeatMapData(classifyMessagesOfChatByDate(
+            data))
+
+        plt.figure(figsize=(24, 12), dpi=100)
+        axes = sns.heatmap(
+            _pivot,
+            cmap='Blues', lw=.5)
+
+        axes.set_yticklabels([i[1:] for i in list(_pivot.index)], rotation=0)
+        axes.set_title(title, fontdict=font, pad=14)
+        axes.set_xlabel('Week of Year', fontdict=font, labelpad=14)
+        axes.set_ylabel('Week Day', fontdict=font, labelpad=14)
+        plt.xticks(rotation=90)
+
+        plt.tight_layout()
+        plt.savefig(targetPath, bbox_inches='tight',
+                    pad_inches=.4, quality=95, dpi=100)
+        plt.close()
+        return True
+    except Exception as e:
+        print(e)
         return False
 
 
