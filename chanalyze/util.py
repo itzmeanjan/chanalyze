@@ -497,8 +497,17 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
     weekDay = []
     msgCount = []
 
+    startW = 0
+
     for i in data:
-        weekNumber.append('Week {} of {}'.format(
+
+        if startW <= int(i.currentDate.strftime('%U'), base=10) + 1:
+            startW = int(data[0].currentDate.strftime('%U'), base=10) + 1
+        else:
+            startW += 1
+
+        weekNumber.append('{} Week {} of {}'.format(
+            startW,
             int(i.currentDate.strftime('%U'),
                 base=10) + 1,
             i.currentDate.strftime('%Y')
