@@ -4,7 +4,7 @@ from __future__ import annotations
 from os.path import abspath, dirname, exists
 from os import mkdir
 from functools import reduce
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 from collections import OrderedDict, Counter
 from math import ceil, sqrt
 from datetime import datetime, date, time
@@ -485,7 +485,7 @@ def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: s
         return False
 
 
-def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFrame:
+def prepareHeatMapData(data: List[MessagesSentOnDate]) -> Tuple[List[Tuple[Any]], List[str]]:
     '''
         Given list of messages sent on a date, for a 
         certain user for chat under inspection, it'll create a
@@ -493,34 +493,28 @@ def prepareHeatMapData(data: List[MessagesSentOnDate]) -> pd.core.frame.DataFram
         column names, which can be used for plotting heatmap of chat,
         depicting how much active ( in this chat ) user is across week days
     '''
+    heatMapData = [[] for i in range(7)]
     weekNumber = []
-    weekDay = []
-    msgCount = []
-
-    startW = 0
 
     for i in data:
 
-        if startW <= int(i.currentDate.strftime('%U'), base=10) + 1:
-            startW = int(data[0].currentDate.strftime('%U'), base=10) + 1
-        else:
-            startW += 1
+        heatMapData[int(i.currentDate.strftime('%w'), base=10)].append(
+            (
+                'Week {} of {}'.format(
+                    int(i.currentDate.strftime('%U'),
+                        base=10) + 1,
+                    i.currentDate.strftime('%Y')
+                ),
+                i.count
+            ))
 
-        weekNumber.append('{} Week {} of {}'.format(
-            startW,
-            int(i.currentDate.strftime('%U'),
-                base=10) + 1,
-            i.currentDate.strftime('%Y')
-        ))
-        weekDay.append('{}{}'.format(i.currentDate.strftime('%w'),
-                                     i.currentDate.strftime('%A')))
-        msgCount.append(i.count)
-
-    return pd.DataFrame({
-        'weekNumber': weekNumber,
-        'weekDay': weekDay,
-        'msgCount': msgCount
-    }, columns=['weekNumber', 'weekDay', 'msgCount'])
+        if 'Week {} of {}'.format(int(i.currentDate.strftime('%U'), base=10) + 1, i.currentDate.strftime('%Y')) not in weekNumber:
+            weekNumber.append(
+                'Week {} of {}'.format(
+                    int(i.currentDate.strftime('%U'), base=10) + 1,
+                    i.currentDate.strftime('%Y'))
+            )
+    return heatMapData, weekNumber
 
 
 @ray.remote
@@ -540,7 +534,7 @@ def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> boo
         }
 
         _pivot = prepareHeatMapData(classifyMessagesOfChatByDate(
-            data)).pivot('weekDay', 'weekNumber', 'msgCount')
+            data))
 
         plt.figure(figsize=(24, 12), dpi=100)
         axes = sns.heatmap(
