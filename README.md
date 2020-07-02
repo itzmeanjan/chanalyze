@@ -36,4 +36,4 @@ $ python3 -m pip install --user chanalyze
 - [x] [Activeness of Chat](docs/chatActiveness.md)
 - [x] [Conversation Initializing Chat Participant Identification _( using Mean & Median Delay )_ - Reflecting Participant's interest towards Chat](docs/conversationStartingPerson.md)
 - [x] [Top Emojis used in Chat](docs/emojiStat.md)
-
+- [x] [Chat Activity HeatMap](docs/heatmap.md)
