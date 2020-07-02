@@ -12,7 +12,6 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormatter, NullLocator, NullFormatter
 from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
 import ray
-import pandas as pd
 import seaborn as sns
 
 from .model.chat import Chat
@@ -485,36 +484,48 @@ def plotConversationInitializerStat(data: Tuple[Counter, Counter], targetPath: s
         return False
 
 
-def prepareHeatMapData(data: List[MessagesSentOnDate]) -> Tuple[List[Tuple[Any]], List[str]]:
+def prepareHeatMapData(data: List[Message]) -> Tuple[List[Dict[str, int]], List[str]]:
     '''
         Given list of messages sent on a date, for a 
         certain user for chat under inspection, it'll create a
-        pandas dataframe for preparaing data with {'weekNumber', 'weekDay', 'msgCount'}
-        column names, which can be used for plotting heatmap of chat,
-        depicting how much active ( in this chat ) user is across week days
+        2D array, holding number of messages sent by user, over weekdays
+
+        Another list to be returned too, holding weekdays chronologically
     '''
-    heatMapData = [[] for i in range(7)]
+    if not data:
+        return None, None
+
+    data = classifyMessagesOfChatByDate(data)
+
+    if not data:
+        return None, None
+
+    heatMapData = [{} for i in range(7)]
     weekNumber = []
 
     for i in data:
 
-        heatMapData[int(i.currentDate.strftime('%w'), base=10)].append(
-            (
-                'Week {} of {}'.format(
-                    int(i.currentDate.strftime('%U'),
-                        base=10) + 1,
-                    i.currentDate.strftime('%Y')
-                ),
-                i.count
-            ))
+        weekInfo = 'Week {} of {}'.format(
+            int(i.currentDate.strftime('%U'), base=10) + 1,
+            i.currentDate.strftime('%Y')
+        )
 
-        if 'Week {} of {}'.format(int(i.currentDate.strftime('%U'), base=10) + 1, i.currentDate.strftime('%Y')) not in weekNumber:
-            weekNumber.append(
-                'Week {} of {}'.format(
-                    int(i.currentDate.strftime('%U'), base=10) + 1,
-                    i.currentDate.strftime('%Y'))
-            )
-    return heatMapData, weekNumber
+        heatMapData[int(i.currentDate.strftime('%w'), base=10)].update({
+            weekInfo: i.count
+        })
+
+        if weekInfo not in weekNumber:
+            weekNumber.append(weekInfo)
+
+    _plottableData = [[] for i in range(7)]
+
+    for i, _week in enumerate(heatMapData):
+        tmp = _plottableData[i]
+
+        for k in weekNumber:
+            tmp.append(_week.get(k, 0))
+
+    return _plottableData, weekNumber
 
 
 @ray.remote
@@ -533,27 +544,30 @@ def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> boo
             'size': 16
         }
 
-        _pivot = prepareHeatMapData(classifyMessagesOfChatByDate(
-            data))
+        _data, _weekIndices = prepareHeatMapData(data)
 
-        plt.figure(figsize=(24, 12), dpi=100)
+        if not (_data and _weekIndices):
+            return False
+
+        fig = plt.figure(figsize=(24, 12), dpi=100)
         axes = sns.heatmap(
-            _pivot,
-            cmap='Blues', lw=.5)
+            _data,
+            cmap='Blues',
+            lw=.5)
 
-        axes.set_yticklabels([i[1:] for i in list(_pivot.index)], rotation=0)
+        axes.set_xticklabels(_weekIndices, rotation=90)
+        axes.set_yticklabels(['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+                              'Thursday', 'Friday', 'Saturday'], rotation=0)
         axes.set_title(title, fontdict=font, pad=14)
         axes.set_xlabel('Week of Year', fontdict=font, labelpad=14)
         axes.set_ylabel('Week Day', fontdict=font, labelpad=14)
-        plt.xticks(rotation=90)
 
         plt.tight_layout()
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.4, quality=95, dpi=100)
-        plt.close()
+        plt.close(fig)
         return True
-    except Exception as e:
-        print(e)
+    except Exception:
         return False
 
 
