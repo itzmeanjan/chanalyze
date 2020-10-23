@@ -1,6 +1,6 @@
 # chanalyze
 
-![performance_improvement](performance.jpg)
+![banner](plots/wordCloudOfMessagesByAnjan.png)
 
 A simple WhatsApp Chat Analyzer ( for both Private &amp; Group chats ), made with :heart:
 
@@ -26,6 +26,7 @@ A simple WhatsApp Chat Analyzer ( for both Private &amp; Group chats ), made wit
 $ python3 -m pip install --user chanalyze
 ```
 - Make sure you've added `$HOME/.local/bin` to your `$PATH` environment variable
+- Export target Whatsapp chat into `*.txt` file, while omitting media.
 - Now analyze your exported WhatsApp chat(s), using **chanalyze**
 
 ## chanalysis _( Chat Analysis )_
@@ -37,3 +38,4 @@ $ python3 -m pip install --user chanalyze
 - [x] [Conversation Initializing Chat Participant Identification _( using Mean & Median Delay )_ - Reflecting Participant's interest towards Chat](docs/conversationStartingPerson.md)
 - [x] [Top Emojis used in Chat](docs/emojiStat.md)
 - [x] [Chat Activity HeatMap](docs/heatmap.md)
+- [x] [Word Cloud from Messages](docs/wordCloud.md)
