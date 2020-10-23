@@ -86,6 +86,7 @@ def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, exte
         Implements process based paralleism using `ray` module,
         all plotting work done concurrently !!!
     '''
+
     _ids = [
         plotContributionInChatByUser.remote(
             chat,
@@ -174,7 +175,7 @@ def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, exte
                 chat.users
             )
         ),
-        plotWordCloudForEachUser(chat)
+        plotWordCloudForEachUser.remote(chat, sinkDirectory, extension)
     ]
 
     # awaiting result of all plotting functions invoked

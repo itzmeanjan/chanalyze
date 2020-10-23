@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from __future__ import annotations
-from os.path import abspath, dirname, exists
+from os.path import abspath, dirname, exists, join
 from os import mkdir
 from functools import reduce
 from typing import Dict, List, Tuple, Any
@@ -572,7 +572,7 @@ def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> boo
         return False
 
 @ray.remote
-def plotWordCloudForEachUser(chat: Chat) -> bool:
+def plotWordCloudForEachUser(chat: Chat, sinkDirectory: str, extention: str) -> bool:
     '''
         Plotting word cloud for each chat participant, with
         messages they sent in chat
@@ -582,7 +582,7 @@ def plotWordCloudForEachUser(chat: Chat) -> bool:
             wc = WordCloud(width=1600, height=900, regexp=r'\S+')
 
             wc.generate(v)
-            wc.to_file(f'wordCloudOfMessagesBy{"_".join(k.split(" "))}.png')
+            wc.to_file(join(sinkDirectory, f'wordCloudOfMessagesBy{"_".join(k.split(" "))}.{extention}'))
 
         return True
     except Exception:
