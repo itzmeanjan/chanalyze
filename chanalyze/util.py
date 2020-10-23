@@ -582,7 +582,7 @@ def plotWordCloudForEachUser(chat: Chat) -> bool:
             wc = WordCloud(width=1600, height=900, regexp=r'\S+')
 
             wc.generate(v)
-            wc.to_file(f'wordCloudWithMessagesBy{"_".join(k.split(" "))}')
+            wc.to_file(f'wordCloudWithMessagesBy{"_".join(k.split(" "))}.png')
 
         return True
     except Exception:

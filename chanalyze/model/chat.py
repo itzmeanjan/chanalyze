@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 from typing import List, Tuple, Dict
-from re import compile as reg_compile, Pattern
+from re import compile as reg_compile, Pattern, IGNORECASE
 from functools import reduce
 from datetime import datetime
+from wordcloud import WordCloud
 
 from .message import Message, MessageIndex
 from .user import User
@@ -86,12 +87,33 @@ class Chat(object):
                                                                            lambda accInner, curInner: True if curInner.index == idx else accInner,
                                                                            cur.messages, False) else acc,
                                                                        self.users, None)
-    
+
     def getConcatenatedMessagesForEachParticipant(self) -> Dict[str, str]:
         '''
             Concatenating all messages sent to this chat, by each participant
         '''
-        return dict(map(lambda e: (e.name, '\n'.join(map(lambda e: e.content, e.messages))), self.users))
+        _mediaOmitted = reg_compile(r'\<media\s+omitted\>', flags=IGNORECASE)
+
+        return dict(map(lambda e: (e.name, '\n'.join(
+            filter(lambda e: not _mediaOmitted.match(e),
+                   map(lambda e: e.content, e.messages)))), self.users))
+
+    def plotWordCloudForEachUser(self) -> bool:
+        '''
+            Plotting word cloud for each chat participant, with
+            messages they sent in chat
+        '''
+        try:
+            for k, v in self.getConcatenatedMessagesForEachParticipant().items():
+                wc = WordCloud(width=1600, height=900, regexp=r'\S+')
+
+                wc.generate(v)
+                wc.to_file(
+                    f'wordCloudWithMessagesBy{"_".join(k.split(" "))}.png')
+
+            return True
+        except Exception:
+            return False
 
     @staticmethod
     def importFromText(filePath: str) -> Chat:
