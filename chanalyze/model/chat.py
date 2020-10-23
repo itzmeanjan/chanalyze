@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from typing import List, Tuple, Dict
-from re import compile as reg_compile, Pattern, IGNORECASE
+from re import compile as reg_compile, Pattern, IGNORECASE, ASCII
 from functools import reduce
 from datetime import datetime
 from wordcloud import WordCloud
@@ -93,10 +93,13 @@ class Chat(object):
             Concatenating all messages sent to this chat, by each participant
         '''
         _mediaOmitted = reg_compile(r'\<media\s+omitted\>', flags=IGNORECASE)
+        _asciiWords = reg_compile(r'\w+', flags=ASCII)
 
-        return dict(map(lambda e: (e.name, '\n'.join(
-            filter(lambda e: not _mediaOmitted.match(e),
-                   map(lambda e: e.content, e.messages)))), self.users))
+        return dict(map(lambda e: (e.name,
+                                   '\n'.join(filter(lambda e: not e.isnumeric(),
+                                                    _asciiWords.findall('\n'.join(
+                                                        filter(lambda e: not _mediaOmitted.match(e),
+                                                               map(lambda e: e.content, e.messages))))))), self.users))
 
     def plotWordCloudForEachUser(self) -> bool:
         '''
