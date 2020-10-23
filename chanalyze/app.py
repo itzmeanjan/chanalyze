@@ -22,7 +22,8 @@ from .util import (
     directoryBuilder,
     getConversationInitializers,
     plotConversationInitializerStat,
-    plotActivityHeatMap
+    plotActivityHeatMap,
+    plotWordCloudForEachUser
 )
 from .model.chat import Chat
 from .emoji_data.get import (
@@ -172,7 +173,8 @@ def _parallelPlotting(chat: Chat, emojiData: List[int], sinkDirectory: str, exte
                 ),
                 chat.users
             )
-        )
+        ),
+        plotWordCloudForEachUser(chat)
     ]
 
     # awaiting result of all plotting functions invoked

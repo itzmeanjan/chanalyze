@@ -5,7 +5,6 @@ from typing import List, Tuple, Dict
 from re import compile as reg_compile, Pattern, IGNORECASE, ASCII
 from functools import reduce
 from datetime import datetime
-from wordcloud import WordCloud
 
 from .message import Message, MessageIndex
 from .user import User
@@ -100,23 +99,6 @@ class Chat(object):
                                                     _asciiWords.findall('\n'.join(
                                                         filter(lambda e: not _mediaOmitted.match(e),
                                                                map(lambda e: e.content, e.messages))))))), self.users))
-
-    def plotWordCloudForEachUser(self) -> bool:
-        '''
-            Plotting word cloud for each chat participant, with
-            messages they sent in chat
-        '''
-        try:
-            for k, v in self.getConcatenatedMessagesForEachParticipant().items():
-                wc = WordCloud(width=1600, height=900, regexp=r'\S+')
-
-                wc.generate(v)
-                wc.to_file(
-                    f'wordCloudWithMessagesBy{"_".join(k.split(" "))}.png')
-
-            return True
-        except Exception:
-            return False
 
     @staticmethod
     def importFromText(filePath: str) -> Chat:
