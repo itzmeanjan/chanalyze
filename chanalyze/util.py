@@ -13,6 +13,7 @@ from matplotlib.ticker import MultipleLocator, PercentFormatter, StrMethodFormat
 from matplotlib.dates import HourLocator, DateFormatter, MinuteLocator, MonthLocator, DayLocator
 import ray
 import seaborn as sns
+from wordcloud import WordCloud
 
 from .model.chat import Chat
 from .model.message import Message, MessageIndex
@@ -566,6 +567,23 @@ def plotActivityHeatMap(data: List[Message], targetPath: str, title: str) -> boo
         plt.savefig(targetPath, bbox_inches='tight',
                     pad_inches=.4, quality=95, dpi=100)
         plt.close(fig)
+        return True
+    except Exception:
+        return False
+
+
+def plotWordCloudForEachUser(chat: Chat) -> bool:
+    '''
+        Plotting word cloud for each chat participant, with
+        messages they sent in chat
+    '''
+    try:
+        for k, v in chat.getConcatenatedMessagesForEachParticipant().items():
+            wc = WordCloud(width=1600, height=900, regexp=r'\S+')
+
+            wc.generate(v)
+            wc.to_file(f'wordCloudWithMessagesBy{"_".join(k.split(" "))}')
+
         return True
     except Exception:
         return False
