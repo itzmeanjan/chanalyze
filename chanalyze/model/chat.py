@@ -92,7 +92,7 @@ class Chat(object):
             Concatenating all messages sent to this chat, by each participant
         '''
         _mediaOmitted = reg_compile(r'\<media\s+omitted\>', flags=IGNORECASE)
-        _asciiWords = reg_compile(r'\w+', flags=ASCII)
+        _asciiWords = reg_compile(r'\w{2,}', flags=ASCII)
 
         return dict(map(lambda e: (e.name,
                                    '\n'.join(filter(lambda e: not e.isnumeric(),
