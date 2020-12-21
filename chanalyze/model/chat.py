@@ -114,14 +114,25 @@ class Chat(object):
                 a certain message from `*.txt` file
             '''
             return reg_compile(
-                r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}\:\d{1,2} [a|p]m)')
+                r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}\:\d{1,2}( [a|p]m)?)', flags=IGNORECASE)
 
         def _splitByDate(pattern: Pattern, content: str) -> List[str]:
             '''
                 splitting whole *.txt file content using
                 date extraction regex we just built
             '''
-            return pattern.split(content)[1:]
+            splitted = list(filter(lambda v: len(v) != 0, filter(lambda v: v, pattern.split(content))))
+
+            index = -1
+            for k, v in enumerate(splitted):
+                if k !=0 and pattern.search(v):
+                    index = k
+                    break
+
+            if index == -1:
+                return splitted
+
+            return splitted[index:]
 
         def _groupify(splitted: List[str]) -> List[Tuple[str, str]]:
             '''
@@ -180,6 +191,10 @@ class Chat(object):
         msgIndex = MessageIndex(0)
 
         with open(filePath, mode='r', encoding='utf-8', errors='ignore') as fd:
+            data = fd.read()
+
+            print(_splitByDate(_getRegex(), data))
+
             obj.users = reduce(
                 _createUserObject, _groupify(
                     _splitByDate(_getRegex(), fd.read())), [])
