@@ -114,18 +114,30 @@ class Chat(object):
                 a certain message from `*.txt` file
             '''
             return reg_compile(
-                r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}\:\d{1,2}( [a|p]m)?)', flags=IGNORECASE)
+                r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}\:\d{1,2}(\s?[a|p]m)?)', flags=IGNORECASE)
 
         def _splitByDate(pattern: Pattern, content: str) -> List[str]:
             '''
-                splitting whole *.txt file content using
+                Splitting whole *.txt file content using
                 date extraction regex we just built
             '''
-            splitted = list(filter(lambda v: len(v) != 0, filter(lambda v: v, pattern.split(content))))
+
+            def _getTimeFormatRegex() -> Pattern:
+                '''
+                    Returns regular expression for extracting AM/PM pattern
+                    from chat timestamp, where AM/PM could be prefixed with "\s" -> whitespace
+                '''
+                return reg_compile(r'^(\s?[a|p]m)$', flags=IGNORECASE)
+
+            _timeFormatRegex = _getTimeFormatRegex()
+
+            splitted = list(filter(lambda v: not _timeFormatRegex.search(v),
+                                   filter(lambda v: len(v) != 0,
+                                          filter(lambda v: v, pattern.split(content)))))
 
             index = -1
             for k, v in enumerate(splitted):
-                if k !=0 and pattern.search(v):
+                if k != 0 and pattern.search(v):
                     index = k
                     break
 
@@ -191,10 +203,6 @@ class Chat(object):
         msgIndex = MessageIndex(0)
 
         with open(filePath, mode='r', encoding='utf-8', errors='ignore') as fd:
-            data = fd.read()
-
-            print(_splitByDate(_getRegex(), data))
-
             obj.users = reduce(
                 _createUserObject, _groupify(
                     _splitByDate(_getRegex(), fd.read())), [])
