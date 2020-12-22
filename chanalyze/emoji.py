@@ -11,17 +11,16 @@ import ray
 
 from .model.chat import Chat
 
-'''
-    Extracts all those non-ascii characters
-    from Chat, which are to be filtered further,
-    so that we can keep only those unicode characters,
-    which are emojis.
-
-    And understand emoji usage of this Chat
-'''
-
 
 def findNonASCIICharactersinText(chat: Chat) -> List[str]:
+    '''
+        Extracts all those non-ascii characters
+        from Chat, which are to be filtered further,
+        so that we can keep only those unicode characters,
+        which are emojis.
+
+        And understand emoji usage of this Chat
+    '''
     return reduce(lambda acc, cur:
                   acc +
                   reduce(lambda accInner, curInner:
@@ -34,29 +33,26 @@ def findNonASCIICharactersinText(chat: Chat) -> List[str]:
                   chat.users, [])
 
 
-'''
-    Filters out only those unicode characters,
-    which are emojis, from a list of all 
-    non-ascii characters used in this Chat,
-    using a list of integers, which is nothing but
-    all supported emojis numeric representation
-'''
-
-
 def findEmojisInText(data: List[str], emojiData: List[int]) -> List[str]:
+    '''
+        Filters out only those unicode characters,
+        which are emojis, from a list of all
+        non-ascii characters used in this Chat,
+        using a list of integers, which is nothing but
+        all supported emojis numeric representation
+    '''
     return reduce(lambda acc, cur:
                   acc + [cur] if ord(cur) in emojiData else acc,
                   data, [])
 
 
-'''
-    Returns a statistics of which emojis was used how many
-    times in a certain Chat ( which is currently under consideration ),
-    from a list of all used emojis in this Chat
-'''
-
 
 def findEmojiUsage(emojis: List[str]) -> Counter:
+    '''
+        Returns a statistics of which emojis was used how many
+        times in a certain Chat ( which is currently under consideration ),
+        from a list of all used emojis in this Chat
+    '''
     return Counter(emojis)
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from datetime import datetime
+from dateutil.parser import parse as datetime_parser
 from math import ceil
 
 '''
@@ -22,10 +23,7 @@ class Message(object):
     '''
     @property
     def timeStamp(self) -> datetime:
-        try:
-            return datetime.strptime(self._timeStamp, r'%d/%m/%y, %I:%M %p')
-        except ValueError:
-            return datetime.strptime(self._timeStamp, r'%d/%m/%Y, %I:%M %p')
+        return datetime_parser(self._timeStamp)
 
     def __str__(self):
         super().__str__()
