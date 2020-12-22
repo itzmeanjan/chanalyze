@@ -46,7 +46,6 @@ def findEmojisInText(data: List[str], emojiData: List[int]) -> List[str]:
                   data, [])
 
 
-
 def findEmojiUsage(emojis: List[str]) -> Counter:
     '''
         Returns a statistics of which emojis was used how many
@@ -59,16 +58,20 @@ def findEmojiUsage(emojis: List[str]) -> Counter:
 @ray.remote
 def plotEmojiUsage(emojis: Counter, targetPath: str, title: str, top: int = 7) -> bool:
     try:
-        _tmpLabels = reduce(lambda acc, cur: acc + [cur] if len(acc) < (top+1) else acc, sorted(
-            emojis, key=lambda e: emojis[e], reverse=True), [])
+        _tmpLabels = reduce(lambda acc, cur: acc + [cur] if len(acc) < (top+1) else acc,
+                            sorted(emojis, key=lambda e: emojis[e], reverse=True), [])
+
         total = sum([emojis[i] for i in emojis])
         _remaining = total - sum([emojis[i] for i in _tmpLabels])
+
         data = [emojis[i] for i in _tmpLabels] + \
-            [_remaining] if len(_tmpLabels) < len(emojis) else []
+            ([_remaining] if len(_tmpLabels) < len(emojis) else [])
+
         labels = ['{} ( {:7.4f} % )'.format(getNameOfUnicodeChar(i).title(), emojis[i]*100/total)
                   for i in _tmpLabels] + \
-            ['Others ( {:7.4f} % )'.format(_remaining*100/total)] if len(
-                _tmpLabels) < len(emojis) else []
+            (['Others ( {:7.4f} % )'.format(_remaining*100/total)] if len(
+                _tmpLabels) < len(emojis) else [])
+
         font = {
             'family': 'serif',
             'color': '#000000',

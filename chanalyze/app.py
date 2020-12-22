@@ -231,11 +231,10 @@ def main():
         print('[!]{}'.format(e))
         endTime = time()
     finally:
+        ray.shutdown()
         print('[+]Success : {} % in {}s'
               .format(successRate,
                       endTime - startTime))
-        ray.shutdown()
-        return
 
 
 if __name__ == '__main__':
