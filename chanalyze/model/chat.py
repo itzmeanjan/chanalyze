@@ -5,6 +5,7 @@ from typing import List, Tuple, Dict
 from re import compile as reg_compile, Pattern, IGNORECASE, ASCII
 from functools import reduce
 from datetime import datetime
+from dateutil.parser import parse as datetime_parser
 
 from .message import Message, MessageIndex
 from .user import User
@@ -41,9 +42,7 @@ class Chat(object):
     @property
     def startDate(self) -> datetime:
         try:
-            return datetime.strptime(self._startDate, r'%d/%m/%y, %I:%M %p')
-        except ValueError:
-            return datetime.strptime(self._startDate, r'%d/%m/%Y, %I:%M %p')
+            return datetime_parser(self._startDate)
         except Exception:
             return self._startDate
 
@@ -54,9 +53,7 @@ class Chat(object):
     @property
     def endDate(self) -> datetime:
         try:
-            return datetime.strptime(self._endDate, r'%d/%m/%y, %I:%M %p')
-        except ValueError:
-            return datetime.strptime(self._endDate, r'%d/%m/%Y, %I:%M %p')
+            return datetime_parser(self._endDate)
         except Exception:
             return self._endDate
 
